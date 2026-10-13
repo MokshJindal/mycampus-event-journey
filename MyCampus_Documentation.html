@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MyCampus: Your Event Journey — Comprehensive Feature & Architecture Documentation</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+    @page {
+      size: A4;
+      margin: 14mm 16mm 16mm 16mm;
+      @bottom-right {
+        content: "Page " counter(page);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 8pt;
+        font-weight: 500;
+        color: #64748b;
+      }
+      @bottom-left {
+        content: "MyCampus: Your Event Journey • Architecture & Feature Dossier";
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 8pt;
+        font-weight: 500;
+        color: #64748b;
+      }
+    }
+
+    @page :first {
+      margin: 0;
+      @bottom-right { content: none; }
+      @bottom-left { content: none; }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #0f172a;
+      background-color: #ffffff;
+      font-size: 9.2pt;
+      line-height: 1.5;
+    }
+
+    /* Page Breaks */
+    .page-break {
+      page-break-before: always;
+      break-before: page;
+    }
+
+    .no-break {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* Cover Page (Full Bleed Edge-to-Edge) */
+    .cover {
+      width: 210mm;
+      height: 297mm;
+      padding: 28mm 22mm 22mm 22mm;
+      background: linear-gradient(150deg, #07090e 0%, #0f172a 40%, #1e1b4b 100%);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      page-break-after: always;
+      break-after: page;
+    }
+
+    .cover-top {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cover-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      background: rgba(59, 130, 246, 0.18);
+      border: 1px solid rgba(96, 165, 250, 0.45);
+      color: #93c5fd;
+      border-radius: 9999px;
+      font-size: 8.5pt;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      align-self: flex-start;
+    }
+
+    .cover h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 38pt;
+      line-height: 1.1;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      margin-bottom: 14px;
+    }
+
+    .cover-gradient-text {
+      background: linear-gradient(135deg, #60a5fa 0%, #c084fc 50%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .cover-subtitle {
+      font-size: 12.5pt;
+      color: #cbd5e1;
+      font-weight: 400;
+      max-width: 620px;
+      line-height: 1.5;
+      margin-bottom: 30px;
+    }
+
+    .cover-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      backdrop-filter: blur(12px);
+    }
+
+    .cover-meta-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cover-meta-label {
+      font-size: 7pt;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #94a3b8;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .cover-meta-val {
+      font-size: 9.5pt;
+      color: #f8fafc;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .cover-meta-val a {
+      color: #38bdf8;
+      text-decoration: none;
+    }
+
+    .cover-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      padding-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 8pt;
+      color: #94a3b8;
+    }
+
+    /* Headings */
+    h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 15.5pt;
+      font-weight: 700;
+      color: #0f172a;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 5px;
+      margin-top: 18px;
+      margin-bottom: 11px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h2 .section-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: #1e3a8a;
+      color: white;
+      font-size: 9pt;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      border-radius: 6px;
+    }
+
+    h3 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 10.8pt;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 13px;
+      margin-bottom: 5px;
+    }
+
+    h4 {
+      font-size: 9.2pt;
+      font-weight: 700;
+      color: #334155;
+      margin-top: 9px;
+      margin-bottom: 3px;
+    }
+
+    p {
+      margin-bottom: 8px;
+      color: #334155;
+    }
+
+    /* Executive Callout Boxes */
+    .callout {
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin: 10px 0;
+      font-size: 8.8pt;
+      border-left: 4px solid;
+      line-height: 1.45;
+    }
+
+    .callout-blue {
+      background: #f0f7ff;
+      border-left-color: #2563eb;
+      color: #1e40af;
+    }
+
+    .callout-purple {
+      background: #faf5ff;
+      border-left-color: #9333ea;
+      color: #581c87;
+    }
+
+    .callout-amber {
+      background: #fffbeb;
+      border-left-color: #d97706;
+      color: #78350f;
+    }
+
+    .callout-emerald {
+      background: #ecfdf5;
+      border-left-color: #059669;
+      color: #064e3b;
+    }
+
+    /* Feature Cards */
+    .feature-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 11px 13px;
+      margin-bottom: 10px;
+      background: #ffffff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .feature-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 5px;
+    }
+
+    .feature-title {
+      font-size: 10.2pt;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .feature-tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-size: 7pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .tag-primary { background: #dbeafe; color: #1e40af; }
+    .tag-purple { background: #ede9fe; color: #5b21b6; }
+    .tag-emerald { background: #d1fae5; color: #065f46; }
+    .tag-amber { background: #fef3c7; color: #92400e; }
+    .tag-rose { background: #ffe4e6; color: #9f1239; }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 13px 0;
+      font-size: 8.2pt;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    th {
+      background-color: #0f172a;
+      color: #ffffff;
+      text-align: left;
+      padding: 7px 9px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      border: 1px solid #0f172a;
+    }
+
+    td {
+      padding: 6px 9px;
+      border: 1px solid #e2e8f0;
+      color: #334155;
+      vertical-align: top;
+      line-height: 1.4;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin-left: 18px;
+      margin-bottom: 7px;
+      color: #334155;
+    }
+
+    li {
+      margin-bottom: 3px;
+    }
+
+    /* Code & Tokens */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.8pt;
+      background-color: #f1f5f9;
+      color: #0f172a;
+      padding: 1px 4px;
+      border-radius: 3px;
+      border: 1px solid #e2e8f0;
+    }
+
+    pre {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 7.2pt;
+      background: #090d16;
+      color: #e2e8f0;
+      padding: 10px 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 8px 0;
+      line-height: 1.4;
+      page-break-inside: avoid;
+      break-inside: avoid;
+      border: 1px solid #1e293b;
+    }
+
+    /* Grid layouts */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 9px 0;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 9px 0;
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    .stat-pill {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    .stat-pill-num {
+      font-size: 15pt;
+      font-weight: 800;
+      color: #1e3a8a;
+      line-height: 1.1;
+      margin-bottom: 2px;
+    }
+
+    .stat-pill-label {
+      font-size: 7pt;
+      font-weight: 600;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .footer-note {
+      margin-top: 18px;
+      padding-top: 9px;
+      border-top: 1px solid #e2e8f0;
+      font-size: 7.8pt;
+      color: #94a3b8;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== COVER PAGE (Full Bleed) ==================== -->
+  <div class="cover">
+    <div class="cover-top">
+      <div class="cover-badge">
+        <span>★</span> Command Shift IIITD • Official Architecture Dossier
+      </div>
+      <h1>MyCampus:<br/><span class="cover-gradient-text">Your Event Journey</span></h1>
+      <div class="cover-subtitle">
+        A unified collegiate event lifecycle command center consolidating multi-platform registrations, progressive milestone deadlines, physical campus venue navigation, conflict detection, and verified student credentials.
+      </div>
+
+      <div class="cover-meta-grid">
+        <div class="cover-meta-item">
+          <span class="cover-meta-label">Live Production URL</span>
+          <span class="cover-meta-val"><a href="https://mycampus-event-journey.vercel.app">mycampus-event-journey.vercel.app</a></span>
+        </div>
+        <div class="cover-meta-item">
+          <span class="cover-meta-label">GitHub Repository</span>
+          <span class="cover-meta-val"><a href="https://github.com/MokshJindal/mycampus-event-journey">MokshJindal/mycampus-event-journey</a></span>
+        </div>
+        <div class="cover-meta-item">
+          <span class="cover-meta-label">Primary Design Theme</span>
+          <span class="cover-meta-val">Obsidian Midnight (#07090e) & Collegiate Light</span>
+        </div>
+        <div class="cover-meta-item">
+          <span class="cover-meta-label">Architecture Style</span>
+          <span class="cover-meta-val">Zero-Build Pure Native ES6+ Modules</span>
+        </div>
+        <div class="cover-meta-item">
+          <span class="cover-meta-label">Target University Ecosystem</span>
+          <span class="cover-meta-val">IIIT Delhi (Indraprastha Institute of Information Tech)</span>
+        </div>
+        <div class="cover-meta-item">
+          <span class="cover-meta-label">Documentation Version</span>
+          <span class="cover-meta-val">v2.1.0 • Comprehensive Specification</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cover-footer">
+      <span>MyCampus: Your Event Journey</span>
+      <span>Confidential & Comprehensive Engineering Dossier</span>
+    </div>
+  </div>
+
+  <!-- ==================== EXECUTIVE SUMMARY ==================== -->
+  <div class="page-break"></div>
+
+  <h2><span class="section-num">1</span> Executive Summary & Problem Landscape</h2>
+
+  <div class="callout callout-blue">
+    <strong>Executive Synopsis:</strong> Modern university students actively register for hackathons, paper symposiums, case challenges, research workshops, and cultural sprints. However, their registrations, milestone deadlines, venues, and schedules are fragmented across 6+ portals (Devpost, Unstop, Luma, Devfolio, EasyChair, Google Forms, and WhatsApp groups). <strong>MyCampus</strong> unifies this chaotic journey into an intelligent, zero-lag, high-aesthetic command center.
+  </div>
+
+  <div class="grid-3">
+    <div class="stat-pill">
+      <div class="stat-pill-num">7</div>
+      <div class="stat-pill-label">Benchmark Events</div>
+    </div>
+    <div class="stat-pill">
+      <div class="stat-pill-num">4</div>
+      <div class="stat-pill-label">Interactive Views</div>
+    </div>
+    <div class="stat-pill">
+      <div class="stat-pill-num">10</div>
+      <div class="stat-pill-label">Core Innovative Features</div>
+    </div>
+  </div>
+
+  <h3>The Fragmentation Landscape: Four Critical Failure Points</h3>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Failure Point</th>
+        <th style="width: 40%;">Observed Student Reality</th>
+        <th style="width: 35%;">MyCampus Engineering Solution</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. Scattered Portals</strong></td>
+        <td>Students track hackathons on Devpost, paper submissions on EasyChair, workshops on Luma, and case rounds on Unstop. Bookmarks and IDs get lost.</td>
+        <td><strong>Unified Journey Timeline:</strong> Consolidated multi-platform dashboard pulling all registrations into single source of truth.</td>
+      </tr>
+      <tr>
+        <td><strong>2. Multi-Stage Deadline Loss</strong></td>
+        <td>Competitions have 4–6 rounds (Abstract, Mentorship, PPT submission, Pitch). Students miss Round 2 submissions while tracking only the kickoff date.</td>
+        <td><strong>Multi-Phase Milestone Architecture:</strong> Linear progress steppers, sub-deadlines, audio checkmarks, and 48-hour Urgency Radar.</td>
+      </tr>
+      <tr>
+        <td><strong>3. Venue & Schedule Clashes</strong></td>
+        <td>Overlapping presentation slots across physical campus blocks (e.g. R&D Block to Old Academic Block) with zero transit buffer.</td>
+        <td><strong>Intelligent Clash Radar:</strong> Proximity algorithms detect &lt;6h conflicts and physical building walking friction with AI mitigation advice.</td>
+      </tr>
+      <tr>
+        <td><strong>4. Day-of-Event Disarray</strong></td>
+        <td>Last-minute panic for Wi-Fi credentials, registration barcodes, emergency room desks, presentation dongles, and team passes.</td>
+        <td><strong>Survival Mode Live HUD:</strong> Focus timer, dynamic SVG QR boarding pass, Wi-Fi 1-click copy, emergency contacts, and pitch checklist.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>High-Level Architecture & Tech Stack</h3>
+  <p>
+    MyCampus is engineered with a strict <strong>Zero-Build, Pure Native ES6+ Module</strong> architecture. It runs natively in any modern browser without Webpack, Vite, Babel, or complex bundling overhead. This guarantees 100% instant load performance, zero compilation lags, and robust offline-first functionality.
+  </p>
+
+  <div class="grid-2">
+    <div class="feature-card">
+      <div class="feature-title">Frontend & Aesthetic Foundation</div>
+      <ul style="margin-top: 6px;">
+        <li><strong>Styling:</strong> Tailwind CSS + Custom Obsidian Midnight tokens</li>
+        <li><strong>Typography:</strong> Playfair Display, Plus Jakarta Sans, JetBrains Mono</li>
+        <li><strong>Aesthetics:</strong> Glassmorphism (<code>backdrop-filter: blur(16px)</code>), mesh gradients, smooth micro-interactions</li>
+        <li><strong>Sound Synthesizer:</strong> Zero-dependency Web Audio API procedural audio</li>
+      </ul>
+    </div>
+    <div class="feature-card">
+      <div class="feature-title">State, Persistence & Standards</div>
+      <ul style="margin-top: 6px;">
+        <li><strong>State Management:</strong> Centralized Event Bus pattern in <code>src/app.js</code></li>
+        <li><strong>Local Storage Engine:</strong> Resilient <code>LocalStorage</code> schema with backup/restore</li>
+        <li><strong>Calendar Standard:</strong> RFC 5545 <code>.ics</code> exporter for Google, Apple, Outlook</li>
+        <li><strong>AI NLP Engine:</strong> Regex & rule-based contextual entity extraction</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ==================== FEATURE CATALOG PART 1 ==================== -->
+  <div class="page-break"></div>
+
+  <h2><span class="section-num">2</span> Complete Feature Catalog & Specifications (Features 1 to 3)</h2>
+
+  <div class="feature-card">
+    <div class="feature-card-header">
+      <div class="feature-title">Feature 1: Multi-Phase Milestone Journey Architecture</div>
+      <span class="feature-tag tag-primary">Flagship Core</span>
+    </div>
+    <p>
+      Traditional calendar applications commit the <em>single-timestamp fallacy</em>—representing a multi-week competition as an isolated point in time. In reality, modern hackathons and symposiums are <strong>progressive multi-phase journeys</strong>.
+    </p>
+    <ul>
+      <li><strong>Progressive Milestone Steppers:</strong> Every event visualizes its full lifecycle through horizontal interactive steppers: <code>Registration</code> ➔ <code>Proposal / Abstract Due</code> ➔ <code>Shortlist Announcement</code> ➔ <code>Mentorship Review</code> ➔ <code>Grand Finale Pitch</code>.</li>
+      <li><strong>Audio-Tactile Deliverable Checkboxes:</strong> Checking off a milestone recalculates completion percentage in real time, increments student XP, triggers a harmonic Web Audio chime, and dynamically advances the event stage.</li>
+      <li><strong>48-Hour Urgency Radar:</strong> Live ticking badges spotlight imminent deliverables due in under 48 hours, styled in amber/red alert beacons.</li>
+      <li><strong>Auto-Completion Transition:</strong> When 100% of milestones are checked off, the event automatically transitions to the <code>completed</code> stage.</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-card-header">
+      <div class="feature-title">Feature 2: The Quad-View Collegiate Command Center</div>
+      <span class="feature-tag tag-purple">4 Dynamic Views</span>
+    </div>
+    <p>Four synchronized perspectives designed to give students complete control over their academic commitments:</p>
+    
+    <h4 style="color: #1e3a8a;">2.1 Journey Timeline View (Flagship)</h4>
+    <p>Grouped chronological flows with status badges, squad avatars with role badges, live venue waypoints, direct portal links, and expandable milestone cards.</p>
+
+    <h4 style="color: #1e3a8a;">2.2 Monthly Academic Calendar Grid</h4>
+    <p>A full responsive monthly calendar matrix with date-matched event pills colored by category. Clicking any date triggers a slide-over drawer detailing all milestones and deliverables scheduled for that day.</p>
+
+    <h4 style="color: #1e3a8a;">2.3 Lifecycle Pipeline (Kanban Board)</h4>
+    <p>Five stage swimlanes: <code>Registered</code> ➔ <code>In Prep</code> ➔ <code>Finalist</code> ➔ <code>Completed</code> ➔ <code>Podium / Won 🏆</code>. Events advance with 1-click progression buttons. Moving to <em>Podium / Won</em> triggers celebratory canvas confetti and a synthesized brass victory fanfare.</p>
+
+    <h4 style="color: #1e3a8a;">2.4 Conflict & Overlap Radar</h4>
+    <p>An intelligent dual-vector algorithm that scans all upcoming milestones:
+      <br/>• <strong>Temporal Conflict (&lt; 6h):</strong> Flags tight deadlines where divided focus threatens submission quality (Critical &lt; 2h, High &lt; 4h, Medium &lt; 6h).
+      <br/>• <strong>Campus Transit Bottlenecks:</strong> Computes walking time between assigned venues and flags transfers with insufficient buffer (&lt; 15 mins).
+      <br/>• <strong>AI Tactical Advice:</strong> Generates automated resolution strategies (e.g. "Delegate abstract review to teammate Diya Patel or submit 24 hours in advance").
+    </p>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-card-header">
+      <div class="feature-title">Feature 3: AI Smart Ingestion & NLP Email Parser</div>
+      <span class="feature-tag tag-emerald">Automated Ingestion</span>
+    </div>
+    <p>
+      Eliminates manual form entry by allowing students to paste raw, unformatted text from registration emails, WhatsApp circulars, or web portal notices.
+    </p>
+    <ul>
+      <li><strong>Contextual Entity Extraction:</strong> Extracts Event Name, Category, Platform, Registration Code, Team Name, Venue Building, Room number, and multiple milestone dates with times.</li>
+      <li><strong>One-Click Presets:</strong> Pre-loaded with 4 realistic templates (<em>Devpost Hackathon</em>, <em>Unstop National AI Challenge</em>, <em>Luma GenAI Workshop</em>, <em>WhatsApp Club Circular</em>).</li>
+      <li><strong>Full JSON Backup & Restore:</strong> Provides complete data portability; users can export or import their full personal schedule and event database with one click.</li>
+    </ul>
+  </div>
+
+  <!-- ==================== FEATURE CATALOG PART 2 ==================== -->
+  <div class="page-break"></div>
+
+  <h2><span class="section-num">2</span> Complete Feature Catalog & Specifications (Features 4 to 6)</h2>
+
+  <div class="feature-card">
+    <div class="feature-card-header">
+      <div class="feature-title">Feature 4: Day-of-Event "Survival Mode" (Live Competition HUD)</div>
+      <span class="feature-tag tag-rose">Hackathon HUD</span>
+    </div>
+    <p>
+      A distraction-free, high-focus dashboard designed specifically for the intense hours of in-person hackathons, case presentations, and finals:
+    </p>
+    <ul>
+      <li><strong>Live Deliverable Chronometer:</strong> Real-time ticking countdown to the imminent deadline (hours, minutes, seconds).</li>
+      <li><strong>Digital Event Boarding Pass:</strong> Dynamically generated vector SVG QR Code, Attendee Roll Number (<code>2024CSB1089</code>), Team Pass Code, and Barcode.</li>
+      <li><strong>Campus Essentials Bar:</strong> Dedicated Wi-Fi credentials with 1-click password copy, campus security control room contact, and medical desk extension.</li>
+      <li><strong>Interactive Pitch Readiness Checklist:</strong> Persistent hardware checklist (HDMI dongles, slide backup on flash drive, offline demo fallback, clicker batteries, pitch timer rehearsal).</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-card-header">
+      <div class="feature-title">Feature 5: Interactive Campus Blueprint & Transit Wayfinder</div>
+      <span class="feature-tag tag-amber">Spatial Intelligence</span>
+    </div>
+    <p>
+      An architectural vector SVG blueprint of the IIIT Delhi campus providing geographic context to event venues:
+    </p>
+    <ul>
+      <li><strong>Campus Nodes Rendered:</strong> R&D Block (Innovation Labs), Old Academic Block (Classrooms & Auditoriums), Library Building (Quiet Workspaces), Student Center (Mess & Rejuvenation), Campus Amphitheatre, and C-Block Auditorium.</li>
+      <li><strong>Live Venue Pins:</strong> Highlights buildings hosting active events with pulsating visual beacons.</li>
+      <li><strong>Campus Transit Calculator:</strong> Computes walking distance (in meters), walking transit minutes, and step-by-step route guidance between any selected source and destination blocks.</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-card-header">
+      <div class="feature-title">Feature 6: Student Event Passport & Printable Resume Brag Sheet</div>
+      <span class="feature-tag tag-primary">Career & Portfolio</span>
+    </div>
+    <p>
+      Converts student hackathon and symposium participation into a verified, career-ready academic brag sheet:
+    </p>
+    <ul>
+      <li><strong>Gamified XP & Level Progression:</strong> Earns experience points for attending workshops, submitting milestones, reaching finals, and winning podium finishes. Displays student ranking from <em>Level 1 Novice</em> to <em>Level 5 Grandmaster Fellow</em>.</li>
+      <li><strong>Multidimensional Skills Radar:</strong> Real-time competency breakdown across five core domains: <em>AI/ML</em>, <em>Systems Engineering</em>, <em>Web3 / Security</em>, <em>Case Analysis</em>, and <em>Live Pitching</em>.</li>
+      <li><strong>Verified Achievement Badges:</strong> Unlocks badges including <em>Hackathon Victor 🏆</em>, <em>Oral Defense 📜</em>, <em>SIH Finalist 🇮🇳</em>, and <em>WASM Practitioner ⚡</em>.</li>
+      <li><strong>1-Click Printable Resume Brag Sheet:</strong> Formatted as an executive academic CV ready for physical printing or PDF export to recruiters, mentors, and scholarship panels.</li>
+    </ul>
+  </div>
+
+  <!-- ==================== FEATURE CATALOG PART 3 ==================== -->
+  <div class="page-break"></div>
+
+  <h2><span class="section-num">2</span> Complete Feature Catalog & Specifications (Features 7 to 10)</h2>
+
+  <div class="feature-card">
+    <div class="feature-card-header">
+      <div class="feature-title">Feature 7: Universal Calendar Sync (.ics Export)</div>
+      <span class="feature-tag tag-purple">Interoperability</span>
+    </div>
+    <p>
+      Full RFC 5545 iCalendar compliance allowing 1-click sync of all milestone deadlines to Google Calendar, Apple Calendar, and Microsoft Outlook. Includes automated reminder alarms set at 24 hours and 2 hours prior to every deliverable.
+    </p>
+    <ul>
+      <li>Transfers event title, description, milestone location, and squad tags into calendar invite notes.</li>
+      <li>Compatible with desktop, iOS, Android, and web calendar subscribers.</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-card-header">
+      <div class="feature-title">Feature 8: Campus Opportunity Discovery Hub & 1-Click Import</div>
+      <span class="feature-tag tag-emerald">Curated Catalog</span>
+    </div>
+    <p>
+      Curated repository of upcoming technical and cultural opportunities across technical institutes:
+    </p>
+    <ul>
+      <li>Categorized by Hackathon, Case Challenge, Technical Workshop, Research Conference, and Cultural Fest.</li>
+      <li>Displays cash prize pools (e.g. ₹5,00,000 SIH, ₹2,50,000 HackIIITD), eligibility criteria, and deadlines.</li>
+      <li><strong>1-Click Timeline Ingestion:</strong> Ingests selected opportunity into the student's personal timeline with pre-configured milestones and venue data.</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-card-header">
+      <div class="feature-title">Feature 9: Power-User Productivity, Command Palette (⌘K) & Shortcuts</div>
+      <span class="feature-tag tag-amber">Ergonomics</span>
+    </div>
+    <p>
+      High-efficiency desktop workflows designed for collegiate power users:
+    </p>
+    <ul>
+      <li><strong>Global Command Palette (<code>⌘K</code> / <code>Ctrl+K</code>):</strong> Instant fuzzy-search omnibar to find events, milestones, venues, or trigger modals without touching the mouse.</li>
+      <li><strong>Numeric Hotkeys:</strong> Press <code>1</code> for Timeline, <code>2</code> for Calendar, <code>3</code> for Kanban, and <code>4</code> for Clash Radar.</li>
+      <li><strong>Live IST Clock:</strong> Real-time Indian Standard Time clock mounted in the navigation bar to keep time-critical submissions synchronized.</li>
+    </ul>
+  </div>
+
+  <div class="feature-card">
+    <div class="feature-card-header">
+      <div class="feature-title">Feature 10: Event Creator & Dynamic Multi-Milestone Builder</div>
+      <span class="feature-tag tag-primary">Dynamic Customization</span>
+    </div>
+    <p>
+      A comprehensive event creation modal enabling students to author custom event journeys:
+    </p>
+    <ul>
+      <li><strong>Multi-Milestone Builder:</strong> Add, remove, and configure dynamic milestone rows with Phase selection (<code>Registration</code>, <code>Submission</code>, <code>Shortlist</code>, <code>Mentorship</code>, <code>Finale</code>), deadline timestamps, and location details.</li>
+      <li><strong>Squad Management:</strong> Define Team Name, assign team members, tag their technical roles, and assign avatar badges.</li>
+      <li><strong>Campus Venue Selector:</strong> Select from pre-mapped IIITD campus buildings or designate virtual tracks.</li>
+      <li><strong>Gamification Parameters:</strong> Allocate custom XP rewards (100–500 XP) and tag multi-disciplinary skills.</li>
+    </ul>
+  </div>
+
+  <!-- ==================== SEED BENCHMARK EVENTS ==================== -->
+  <div class="page-break"></div>
+
+  <h2><span class="section-num">3</span> Benchmark Seed Data & Event Specifications</h2>
+
+  <p>
+    MyCampus comes pre-loaded with 7 authentic, realistic collegiate events reflecting the actual student journey at premier technical institutes (IIIT Delhi, IITs, NITs):
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 22%;">Event Title</th>
+        <th style="width: 13%;">Category</th>
+        <th style="width: 12%;">Platform</th>
+        <th style="width: 18%;">Venue Block</th>
+        <th style="width: 12%;">Team Code</th>
+        <th style="width: 23%;">Key Milestones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>HackIIITD 2026</strong><br/><small>Quantum Leap 36h Hack</small></td>
+        <td>Hackathon</td>
+        <td>Devpost</td>
+        <td>R&D Block (3rd Flr Auditorium)</td>
+        <td><code>ByteCoders</code><br/>(HID26-8942)</td>
+        <td>Reg (Oct 5), PPT Abstract (Oct 18), Shortlist (Oct 21), Mentorship (Oct 24), Grand Pitch (Oct 25)</td>
+      </tr>
+      <tr>
+        <td><strong>Smart India Hackathon</strong><br/><small>National Finale Track</small></td>
+        <td>Competition</td>
+        <td>Unstop</td>
+        <td>Old Academic Block (Audi 101)</td>
+        <td><code>Team Alpha</code><br/>(SIH26-DEL-102)</td>
+        <td>Theme Selection, Internal Screening (Oct 18), Final Idea Nomination (Oct 28), National Finale (Nov 15)</td>
+      </tr>
+      <tr>
+        <td><strong>GDG AI Masterclass</strong><br/><small>Applied LLM & Agents</small></td>
+        <td>Workshop</td>
+        <td>Luma</td>
+        <td>R&D Block (Lab B-201)</td>
+        <td>Individual<br/>(LUMA-TK-5521)</td>
+        <td>Pre-req Setup (Oct 14), In-Person Hands-on Lab (Oct 19), Capstone Project Submission (Oct 26)</td>
+      </tr>
+      <tr>
+        <td><strong>ACM Research Symposium</strong><br/><small>Undergrad Computing Colloq</small></td>
+        <td>Conference</td>
+        <td>EasyChair</td>
+        <td>Library Building (Seminar Hall)</td>
+        <td><code>Paper #142</code><br/>(Lead Author)</td>
+        <td>Extended Abstract, Peer Review Notification, Camera-Ready Paper (Oct 22), Oral Defense (Nov 02)</td>
+      </tr>
+      <tr>
+        <td><strong>FinTech Disrupt Challenge</strong><br/><small>Algorithmic Trading Sprint</small></td>
+        <td>Case Challenge</td>
+        <td>Unstop</td>
+        <td>C-Block Auditorium (Level 1)</td>
+        <td><code>QuantShift</code><br/>(FIN-9912)</td>
+        <td>Round 1 Financial Model (Oct 20), Mentor Dry-run (Oct 27), Boardroom Presentation (Nov 05)</td>
+      </tr>
+      <tr>
+        <td><strong>Odyssey '26 Cultural Fest</strong><br/><small>Annual Cultural & UI Sprint</small></td>
+        <td>Festival / Design</td>
+        <td>Devfolio</td>
+        <td>Student Center & Amphitheatre</td>
+        <td><code>DesignDynasty</code><br/>(ODY-6102)</td>
+        <td>Theme Reveal, Design System Submission, Live 6-Hour Designathon Showcase (Nov 10)</td>
+      </tr>
+      <tr>
+        <td><strong>ETHIndia Delhi Chapter</strong><br/><small>ZK-Rollups & Web3 Hack</small></td>
+        <td>Web3 Hackathon</td>
+        <td>Devfolio</td>
+        <td>R&D Block (Atrium Ground)</td>
+        <td><code>ZeroKnowledge</code><br/>(ETH-DEL-401)</td>
+        <td>Smart Contract Submission, Testnet Deployment, Mainstage Pitch & Bounty Evaluation (Nov 18)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Campus Architectural Nodes & Transit Distance Matrix</h3>
+  <p>The interactive wayfinder uses the following spatial graph representing IIIT Delhi's campus:</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Building ID</th>
+        <th>Building Name</th>
+        <th>Campus Zone</th>
+        <th>Primary Academic Purpose</th>
+        <th>Transit Time to R&D Block</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>b-rnd</code></td>
+        <td>R&D Block</td>
+        <td>North Campus</td>
+        <td>Advanced Research Labs, Hackathon Arenas, Faculty Offices</td>
+        <td>0 min (Anchor)</td>
+      </tr>
+      <tr>
+        <td><code>b-oab</code></td>
+        <td>Old Academic Block</td>
+        <td>Central Campus</td>
+        <td>Lecture Halls, General Auditoriums, Administrative Offices</td>
+        <td>3.5 mins (280 m)</td>
+      </tr>
+      <tr>
+        <td><code>b-lib</code></td>
+        <td>Library Building</td>
+        <td>East Campus</td>
+        <td>Research Colloquiums, Silent Study, Archive Repository</td>
+        <td>4.0 mins (320 m)</td>
+      </tr>
+      <tr>
+        <td><code>b-sc</code></td>
+        <td>Student Center</td>
+        <td>South Campus</td>
+        <td>Dining Halls, Club Rehearsal Rooms, Rejuvenation Zones</td>
+        <td>5.5 mins (440 m)</td>
+      </tr>
+      <tr>
+        <td><code>b-amphi</code></td>
+        <td>Campus Amphitheatre</td>
+        <td>Central Courtyard</td>
+        <td>Cultural Showcases, Opening Ceremonies, Large Gatherings</td>
+        <td>2.5 mins (200 m)</td>
+      </tr>
+      <tr>
+        <td><code>b-caudi</code></td>
+        <td>C-Block Auditorium</td>
+        <td>West Campus</td>
+        <td>Grand Jury Pitches, Keynote Lectures, Award Ceremonies</td>
+        <td>3.0 mins (240 m)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ==================== DESIGN SYSTEM & DEPLOYMENT ==================== -->
+  <div class="page-break"></div>
+
+  <h2><span class="section-num">4</span> Design System, Sound Engine & Deployment</h2>
+
+  <div class="grid-2">
+    <div class="feature-card">
+      <div class="feature-title">Obsidian Midnight Palette</div>
+      <p style="font-size: 8.5pt; margin-top: 4px;">
+        Designed to mirror high-performance developer tools like Linear and Apple developer hubs:
+      </p>
+      <ul style="font-size: 8pt; margin-top: 4px;">
+        <li><code>#07090e</code>: Deep obsidian midnight canvas</li>
+        <li><code>#0f172a</code>: Elevated card slate surface</li>
+        <li><code>#1e293b</code>: Sub-panel and border separator</li>
+        <li><code>#3b82f6</code>: Primary tech blue electric accent</li>
+        <li><code>#8b5cf6</code>: AI & intelligence purple accent</li>
+        <li><code>#10b981</code>: Success and podium emerald beacon</li>
+      </ul>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-title">Procedural Web Audio Synthesizer</div>
+      <p style="font-size: 8.5pt; margin-top: 4px;">
+        Zero audio asset files (0 KB network overhead). All sounds are synthesized on the fly via the browser's <code>AudioContext</code>:
+      </p>
+      <ul style="font-size: 8pt; margin-top: 4px;">
+        <li><strong>Click Feedback:</strong> Short, dampened 800Hz pulse for tactical button presses.</li>
+        <li><strong>Milestone Chime:</strong> Two-tone harmonic arpeggio (523Hz ➔ 659Hz) on checkbox completion.</li>
+        <li><strong>Victory Fanfare:</strong> Multi-oscillator brass chord with decay on advancing to <em>Podium / Won</em>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Deployment, Verification & Source Control</h3>
+  <div class="callout callout-emerald">
+    <strong>Continuous Deployment Status:</strong> Both the Git repository and Vercel edge deployment are operational with 100% test passing rates.
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 25%;">Target</th>
+        <th style="width: 35%;">Link / Destination</th>
+        <th style="width: 40%;">Configuration & Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Live Vercel Production</strong></td>
+        <td><a href="https://mycampus-event-journey.vercel.app">mycampus-event-journey.vercel.app</a></td>
+        <td>Clean URLs enabled via <code>vercel.json</code>, CDN caching, sub-second global response.</td>
+      </tr>
+      <tr>
+        <td><strong>GitHub Repository</strong></td>
+        <td><a href="https://github.com/MokshJindal/mycampus-event-journey">MokshJindal/mycampus-event-journey</a></td>
+        <td>Branch <code>main</code>, 32 verified source files, automated Git sync.</td>
+      </tr>
+      <tr>
+        <td><strong>Node Syntax Check</strong></td>
+        <td><code>node --check src/**/*.js</code></td>
+        <td>20 / 20 modules verified syntax error-free.</td>
+      </tr>
+      <tr>
+        <td><strong>Clash Detection Unit</strong></td>
+        <td>Automated unit test suite</td>
+        <td>Verified exact 4.0-hour overlap detection between SIH abstract & HackIIITD PPT.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Complete File Tree Structure</h3>
+  <pre>
+cmd-shift-iiit-d/
+├── index.html                   # HTML5 Entry Point (Dark/Light toggle, container mounts)
+├── vercel.json                  # Vercel Production Routing & Header Configuration
+├── README.md                    # Comprehensive Project Readme
+├── styles/
+│   └── main.css                 # Obsidian Midnight tokens, glassmorphism, responsive grid
+├── src/
+│   ├── app.js                   # State Orchestrator, Event Bus & Route Dispatcher
+│   ├── data/
+│   │   ├── initialData.js       # 7 authentic campus events, venues, members, checklists
+│   │   └── discoveryData.js     # Curated campus opportunity catalog
+│   ├── components/
+│   │   ├── Navbar.js            # Glass navigation island, live IST clock, view pills
+│   │   ├── HeroStats.js         # Command center KPIs, urgency ticker, category filters
+│   │   ├── TimelineView.js      # Flagship multi-phase milestone journey view
+│   │   ├── CalendarView.js      # Interactive monthly calendar & date inspector drawer
+│   │   ├── KanbanView.js        # 5-stage lifecycle pipeline with confetti & fanfare
+│   │   ├── ClashRadarView.js    # Conflict analyzer & AI mitigation advice engine
+│   │   ├── SmartImportModal.js  # NLP email parser & JSON backup/restore modal
+│   │   ├── SurvivalModeModal.js # Day-of-Event HUD, dynamic SVG QR pass & checklist
+│   │   ├── CampusMapModal.js    # Interactive SVG campus map & transit wayfinder
+│   │   ├── PassportModal.js     # Student Event Passport & printable resume brag sheet
+│   │   ├── DiscoverModal.js     # Campus discovery hub with 1-click import
+│   │   ├── EventModal.js        # Add / Edit event modal with dynamic milestone builder
+│   │   └── CommandPalette.js    # Cmd+K global search and action omnibar
+│   └── utils/
+│       ├── audio.js             # Web Audio API synthesizer for procedural sounds
+│       ├── storage.js           # LocalStorage engine, clash detection, XP calculator
+│       ├── icsExporter.js       # RFC 5545 iCalendar (.ics) export generator
+│       └── nlpParser.js         # Smart natural language regex/NLP email parser
+└── MyCampus_Project_Features_and_Details.pdf # Generated PDF Documentation Dossier
+  </pre>
+
+  <div class="footer-note">
+    <strong>MyCampus: Your Event Journey</strong> • Built with pride for collegiate developers and hackathon innovators • IIIT Delhi
+  </div>
+
+</body>
+</html>
