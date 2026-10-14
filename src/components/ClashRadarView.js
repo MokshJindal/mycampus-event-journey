@@ -55,7 +55,7 @@ export class ClashRadarView {
                   </span>
                 </div>
 
-                <h2 class="font-serif-classic font-bold text-2xl text-slate-900 dark:text-white mt-1">
+                <h2 class="font-display font-bold text-2xl text-slate-900 dark:text-white mt-1">
                   Schedule Clash & Travel Radar
                 </h2>
 
@@ -69,7 +69,7 @@ export class ClashRadarView {
             <div class="flex items-center space-x-4 bg-slate-50 dark:bg-slate-900/60 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700">
               <div class="text-right">
                 <div class="text-[11px] text-slate-400 font-semibold uppercase">Schedule Health</div>
-                <div class="text-lg font-bold font-serif-classic ${
+                <div class="text-lg font-bold font-display ${
                   this.clashes.length === 0 ? 'text-emerald-600' : (criticalCount > 0 ? 'text-rose-600' : 'text-amber-500')
                 }">
                   ${this.clashes.length === 0 ? '100% Clear' : (criticalCount > 0 ? 'Action Required' : 'Moderate Stress')}
@@ -91,7 +91,7 @@ export class ClashRadarView {
             <div class="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center text-3xl mx-auto mb-4 border border-emerald-200 dark:border-emerald-800">
               <i class="fas fa-shield-halved"></i>
             </div>
-            <h3 class="font-serif-classic font-bold text-lg text-slate-900 dark:text-white">
+            <h3 class="font-display font-bold text-lg text-slate-900 dark:text-white">
               Zero Schedule Collisions!
             </h3>
             <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
@@ -169,7 +169,7 @@ export class ClashRadarView {
                 ${clash.m1.deadline.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
-            <h4 class="font-serif-classic font-bold text-sm text-slate-900 dark:text-white">
+            <h4 class="font-display font-bold text-sm text-slate-900 dark:text-white">
               ${clash.m1.eventTitle}
             </h4>
             <div class="text-xs text-slate-600 dark:text-slate-300 font-medium flex items-center space-x-1">
@@ -192,7 +192,7 @@ export class ClashRadarView {
                 ${clash.m2.deadline.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
-            <h4 class="font-serif-classic font-bold text-sm text-slate-900 dark:text-white">
+            <h4 class="font-display font-bold text-sm text-slate-900 dark:text-white">
               ${clash.m2.eventTitle}
             </h4>
             <div class="text-xs text-slate-600 dark:text-slate-300 font-medium flex items-center space-x-1">

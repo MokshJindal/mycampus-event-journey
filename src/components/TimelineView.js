@@ -1,14 +1,14 @@
 // ==========================================================================
 // Upgraded TimelineView Component
-// Flagship Event Journey: Luxury Glass Cards, Connected Steppers,
-// Animated Milestones, and Rapid Campus Waypoints
+// Flagship Event Journey: Modern Glass Cards, Connected Steppers,
+// Animated Milestones, Unstop Plugin Integration, and Campus Waypoints
 // ==========================================================================
 
 import { sound } from '../utils/audio.js';
 import { ICSExporter } from '../utils/icsExporter.js';
 
 export class TimelineView {
-  constructor({ events, onToggleMilestone, onEditEvent, onDeleteEvent, onOpenSurvivalMode, onOpenVenueMap, onAddEvent }) {
+  constructor({ events, onToggleMilestone, onEditEvent, onDeleteEvent, onOpenSurvivalMode, onOpenVenueMap, onAddEvent, onOpenUnstopPlugin }) {
     this.events = events;
     this.onToggleMilestone = onToggleMilestone;
     this.onEditEvent = onEditEvent;
@@ -16,6 +16,7 @@ export class TimelineView {
     this.onOpenSurvivalMode = onOpenSurvivalMode;
     this.onOpenVenueMap = onOpenVenueMap;
     this.onAddEvent = onAddEvent;
+    this.onOpenUnstopPlugin = onOpenUnstopPlugin;
   }
 
   update({ events }) {
@@ -69,7 +70,7 @@ export class TimelineView {
   getStageBadge(stage) {
     switch (stage) {
       case 'won':
-        return `<span class="px-2.5 py-0.5 text-[11px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 rounded-full border border-amber-500/30 flex items-center space-x-1 shadow-sm"><i class="fas fa-trophy text-amber-500 text-[10px]"></i><span>Podium Won</span></span>`;
+        return `<span class="px-2.5 py-0.5 text-[11px] font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 rounded-full border border-amber-500/30 flex items-center space-x-1 shadow-2xs"><i class="fas fa-trophy text-amber-500 text-[10px]"></i><span>Podium Won</span></span>`;
       case 'completed':
         return `<span class="px-2.5 py-0.5 text-[11px] font-semibold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 rounded-full border border-emerald-500/30 flex items-center space-x-1"><i class="fas fa-check-circle text-emerald-500 text-[10px]"></i><span>Completed</span></span>`;
       case 'finalist':
@@ -88,21 +89,21 @@ export class TimelineView {
     if (this.events.length === 0) {
       container.innerHTML = `
         <div class="max-w-xl mx-auto py-20 px-4 text-center">
-          <div class="w-20 h-20 rounded-3xl bg-blue-500/10 text-blue-500 flex items-center justify-center text-3xl mx-auto mb-5 border border-blue-500/20 shadow-lg">
+          <div class="w-16 h-16 rounded-2xl bg-blue-500/10 text-blue-500 flex items-center justify-center text-2xl mx-auto mb-4 border border-blue-500/20 shadow-sm">
             <i class="fas fa-calendar-xmark"></i>
           </div>
-          <h3 class="text-2xl font-serif font-bold text-slate-900 dark:text-white">
+          <h3 class="text-xl font-display font-bold text-slate-900 dark:text-white">
             No Active Events In This View
           </h3>
           <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-2 max-w-md mx-auto leading-relaxed">
-            Ready to track your next hackathon or conference? Paste a confirmation email using AI Smart Ingest or add a custom timeline.
+            Ready to track your next hackathon or competition? Use the Unstop plugin, paste an email, or add a custom timeline.
           </p>
-          <div class="mt-8 flex justify-center space-x-3">
-            <button id="empty-add-btn" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-md shadow-blue-500/20 transition-all">
+          <div class="mt-6 flex justify-center space-x-3">
+            <button id="empty-add-btn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-xs transition-all">
               <i class="fas fa-plus mr-1.5"></i> Add Custom Event
             </button>
-            <button id="empty-import-btn" class="px-5 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-xs font-bold border border-slate-300 dark:border-slate-700 transition-all">
-              <i class="fas fa-wand-magic-sparkles mr-1.5 text-amber-500"></i> AI Smart Ingest
+            <button id="empty-unstop-btn" class="px-4 py-2 unstop-pill hover:opacity-80 rounded-xl text-xs font-bold transition-all">
+              <i class="fas fa-bolt mr-1.5 text-orange-500"></i> Unstop Plugin
             </button>
           </div>
         </div>
@@ -110,34 +111,33 @@ export class TimelineView {
 
       const addBtn = document.getElementById('empty-add-btn');
       if (addBtn) addBtn.onclick = () => this.onAddEvent();
-      const impBtn = document.getElementById('empty-import-btn');
-      if (impBtn) impBtn.onclick = () => {
-        const smartBtn = document.getElementById('btn-smart-ingest');
-        if (smartBtn) smartBtn.click();
+      const unstopBtn = document.getElementById('empty-unstop-btn');
+      if (unstopBtn) unstopBtn.onclick = () => {
+        if (this.onOpenUnstopPlugin) this.onOpenUnstopPlugin();
       };
       return;
     }
 
     container.innerHTML = `
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 space-y-6">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 space-y-5">
         
-        <div class="flex items-center justify-between pb-2 border-b border-slate-200/60 dark:border-white/5">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-200/80 dark:border-white/5">
           <div class="flex items-center space-x-2.5">
-            <h2 class="font-serif font-bold text-xl sm:text-2xl text-slate-900 dark:text-white">
+            <h2 class="font-display font-bold text-lg sm:text-xl text-slate-900 dark:text-white">
               Event Journey Milestones
             </h2>
-            <span class="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-xs font-mono font-bold">
+            <span class="px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 text-xs font-mono font-bold border border-blue-200 dark:border-blue-800">
               ${this.events.length} Active
             </span>
           </div>
 
-          <div class="text-xs text-slate-400 font-medium hidden sm:block">
-            <i class="fas fa-info-circle mr-1 text-blue-500"></i> Click checkmarks to mark milestones complete & claim XP
+          <div class="text-xs text-slate-400 font-medium hidden sm:flex items-center space-x-2">
+            <span>Click checkmarks to complete deliverables & claim XP</span>
           </div>
         </div>
 
         <!-- 2-Column Responsive Grid -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
           ${this.events.map(event => this.renderEventCard(event)).join('')}
         </div>
 
@@ -152,50 +152,57 @@ export class TimelineView {
     const completedCount = milestones.filter(m => m.completed).length;
     const progressPercent = milestones.length > 0 ? Math.round((completedCount / milestones.length) * 100) : 0;
     const hasVenue = event.venue && event.venue.building;
+    const isUnstop = event.platform === 'Unstop';
 
     return `
-      <article class="glass-card rounded-3xl overflow-hidden transition-all duration-300 relative group" id="card-${event.id}">
+      <article class="glass-card rounded-2xl overflow-hidden transition-all duration-200 relative group" id="card-${event.id}">
         
-        <!-- Top Illuminated Gradient Accent Line -->
-        <div class="h-1.5 w-full" style="background: linear-gradient(90deg, ${event.color || '#3b82f6'}, #8b5cf6, #f59e0b);"></div>
+        <!-- Top Accent Line -->
+        <div class="h-1 w-full" style="background-color: ${isUnstop ? '#ea580c' : (event.color || '#2563eb')};"></div>
 
         <!-- Card Header Section -->
-        <div class="p-6 sm:p-7 border-b border-slate-100 dark:border-white/5 space-y-4">
+        <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-white/5 space-y-3.5">
           
-          <div class="flex items-start justify-between gap-4">
+          <div class="flex items-start justify-between gap-3">
             
-            <div class="space-y-2 flex-1">
-              <div class="flex flex-wrap items-center gap-2">
-                <span class="px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-lg text-white shadow-xs" style="background-color: ${event.color || '#3b82f6'};">
+            <div class="space-y-1.5 flex-1">
+              <div class="flex flex-wrap items-center gap-1.5">
+                <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-md text-white shadow-2xs" style="background-color: ${isUnstop ? '#ea580c' : (event.color || '#2563eb')};">
                   ${event.category || 'Event'}
                 </span>
                 
-                <span class="px-2 py-0.5 text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg border border-slate-200 dark:border-slate-700/80 flex items-center space-x-1 font-mono">
-                  <i class="fas fa-layer-group text-[9px] text-slate-400"></i>
-                  <span>${event.platform || 'Campus'}</span>
-                </span>
+                ${isUnstop ? `
+                  <button data-action="unstop-details" data-id="${event.id}" title="View Unstop Competition Details" class="unstop-pill px-2 py-0.5 text-[10px] font-bold rounded flex items-center space-x-1 hover:opacity-80 transition-opacity">
+                    <i class="fas fa-bolt text-[9px]"></i>
+                    <span>Unstop Track</span>
+                  </button>
+                ` : `
+                  <span class="px-2 py-0.5 text-[10px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-700/80 font-mono">
+                    ${event.platform || 'Campus'}
+                  </span>
+                `}
 
                 ${this.getStageBadge(event.stage)}
               </div>
 
-              <h3 class="font-serif font-bold text-xl sm:text-2xl text-slate-900 dark:text-white leading-tight tracking-tight">
+              <h3 class="font-display font-bold text-lg sm:text-xl text-slate-900 dark:text-white leading-snug tracking-tight">
                 ${event.title}
               </h3>
 
-              <div class="flex flex-wrap items-center gap-y-1.5 gap-x-3 text-xs text-slate-500 dark:text-slate-400 pt-0.5">
-                <span class="font-mono bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold">
-                  <i class="fas fa-barcode text-[9px] mr-1 text-slate-400"></i>${event.registrationId || 'REG-PENDING'}
+              <div class="flex flex-wrap items-center gap-y-1 gap-x-2.5 text-xs text-slate-500 dark:text-slate-400">
+                <span class="font-mono bg-slate-100 dark:bg-slate-800/80 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-[11px]">
+                  ${event.registrationId || 'REG-PENDING'}
                 </span>
 
                 ${event.teamName ? `
-                  <span class="flex items-center space-x-1.5 font-medium">
-                    <i class="fas fa-users text-blue-500"></i>
+                  <span class="flex items-center space-x-1 font-medium text-slate-700 dark:text-slate-300">
+                    <i class="fas fa-users text-blue-500 text-xs"></i>
                     <span>Team <strong>${event.teamName}</strong></span>
                   </span>
                 ` : ''}
 
                 ${event.prizePool ? `
-                  <span class="flex items-center space-x-1.5 text-amber-500 font-semibold">
+                  <span class="flex items-center space-x-1 text-emerald-600 dark:text-emerald-400 font-semibold">
                     <i class="fas fa-gift text-xs"></i>
                     <span>${event.prizePool}</span>
                   </span>
@@ -204,20 +211,20 @@ export class TimelineView {
             </div>
 
             <!-- Quick Action Floating Buttons -->
-            <div class="flex items-center space-x-1.5 flex-shrink-0">
-              <button data-action="survival" data-id="${event.id}" title="Launch Day-of-Event HUD & QR Admit Pass" class="p-2.5 text-amber-500 hover:bg-amber-500/10 rounded-xl border border-amber-500/30 transition-colors shadow-sm">
-                <i class="fas fa-bolt text-sm"></i>
+            <div class="flex items-center space-x-1 flex-shrink-0">
+              <button data-action="survival" data-id="${event.id}" title="Launch Day-of HUD & QR Pass" class="p-2 text-amber-500 hover:bg-amber-500/10 rounded-lg border border-amber-500/30 transition-colors">
+                <i class="fas fa-bolt text-xs"></i>
               </button>
 
-              <button data-action="ics" data-id="${event.id}" title="Export event to calendar (.ICS)" class="p-2.5 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-xl border border-slate-200 dark:border-slate-700/80 transition-colors">
-                <i class="far fa-calendar-plus text-sm"></i>
+              <button data-action="ics" data-id="${event.id}" title="Export event (.ICS)" class="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-500/10 rounded-lg border border-slate-200 dark:border-slate-700/80 transition-colors">
+                <i class="far fa-calendar-plus text-xs"></i>
               </button>
 
-              <button data-action="edit" data-id="${event.id}" title="Edit event" class="p-2.5 text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700/80 transition-colors">
+              <button data-action="edit" data-id="${event.id}" title="Edit event" class="p-2 text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700/80 transition-colors">
                 <i class="fas fa-pen text-xs"></i>
               </button>
 
-              <button data-action="delete" data-id="${event.id}" title="Remove event" class="p-2.5 text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 rounded-xl border border-slate-200 dark:border-slate-700/80 transition-colors">
+              <button data-action="delete" data-id="${event.id}" title="Remove event" class="p-2 text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 rounded-lg border border-slate-200 dark:border-slate-700/80 transition-colors">
                 <i class="fas fa-trash-can text-xs"></i>
               </button>
             </div>
@@ -233,13 +240,13 @@ export class TimelineView {
 
           <!-- Venue Waypoint Card -->
           ${hasVenue ? `
-            <div class="bg-slate-50 dark:bg-slate-900/70 p-3 rounded-2xl border border-slate-200 dark:border-white/5 flex items-center justify-between text-xs">
-              <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xs">
+            <div class="bg-slate-50 dark:bg-slate-900/60 p-2.5 rounded-xl border border-slate-200 dark:border-white/5 flex items-center justify-between text-xs">
+              <div class="flex items-center space-x-2.5">
+                <div class="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-xs">
                   <i class="fas fa-location-dot"></i>
                 </div>
                 <div>
-                  <div class="font-bold text-slate-900 dark:text-white">
+                  <div class="font-bold text-slate-900 dark:text-white font-display">
                     ${event.venue.building}
                   </div>
                   <div class="text-[11px] text-slate-500 dark:text-slate-400">
@@ -248,110 +255,107 @@ export class TimelineView {
                 </div>
               </div>
 
-              <button data-action="map-venue" data-building="${event.venue.building}" class="px-3 py-1.5 bg-white dark:bg-slate-800 hover:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold rounded-xl border border-slate-300 dark:border-slate-700 text-[11px] flex items-center space-x-1.5 shadow-xs transition-colors">
-                <i class="fas fa-compass text-xs"></i>
-                <span>Wayfinder</span>
+              <button data-action="map-venue" data-building="${event.venue.building}" class="px-2.5 py-1 bg-white dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 font-semibold rounded-lg border border-slate-200 dark:border-slate-700 text-xs flex items-center space-x-1 transition-colors">
+                <span>View on Map</span>
+                <i class="fas fa-arrow-right text-[10px]"></i>
               </button>
             </div>
           ` : ''}
 
-          <!-- Horizontal Stepper Bar (Linear Visual Pipeline) -->
-          <div class="pt-2">
-            <div class="flex items-center justify-between text-xs mb-2">
-              <span class="font-semibold text-slate-500 dark:text-slate-400 flex items-center space-x-1.5">
-                <span>Journey Completion</span>
-                <span class="font-mono text-slate-900 dark:text-white font-bold">(${completedCount}/${milestones.length})</span>
+          <!-- Progress Bar & Milestone Counter -->
+          <div class="space-y-1.5 pt-1">
+            <div class="flex justify-between items-center text-xs font-semibold">
+              <span class="text-slate-500 dark:text-slate-400">
+                Milestone Progress (${completedCount}/${milestones.length})
               </span>
-              <span class="font-mono font-bold ${progressPercent === 100 ? 'text-emerald-500' : 'text-blue-500'}">
+              <span class="font-mono ${progressPercent === 100 ? 'text-emerald-500 font-bold' : 'text-blue-500'}">
                 ${progressPercent}%
               </span>
             </div>
-            
+
             <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
-              <div class="h-2 rounded-full transition-all duration-500 ${
-                progressPercent === 100
-                  ? 'bg-emerald-500'
-                  : 'bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600'
-              }" style="width: ${progressPercent}%;"></div>
+              <div 
+                class="h-2 rounded-full transition-all duration-500 ${progressPercent === 100 ? 'bg-emerald-500' : 'bg-blue-600'}" 
+                style="width: ${progressPercent}%;"
+              ></div>
             </div>
           </div>
 
         </div>
 
-        <!-- Milestones Stem Section -->
-        <div class="p-6 sm:p-7 bg-slate-50/40 dark:bg-slate-950/40 space-y-4">
-          <div class="space-y-3.5">
-            ${milestones.map((milestone) => {
-              const relative = this.getRelativeDeadline(milestone.deadline, milestone.completed);
+        <!-- Milestones Section (Steppers & Deliverables) -->
+        <div class="p-5 sm:p-6 space-y-4">
+          
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between font-mono">
+            <span>Milestone Checkpoints</span>
+            <span>Reward: +${event.xpReward || 200} XP</span>
+          </div>
+
+          <div class="space-y-3">
+            ${milestones.map((milestone, idx) => {
               const isUrgent = milestone.urgent && !milestone.completed;
+              const relTime = this.getRelativeDeadline(milestone.deadline, milestone.completed);
+              const phaseIcon = this.getPhaseIcon(milestone.phase);
 
               return `
-                <div class="flex items-start space-x-3.5 group" id="ms-${event.id}-${milestone.id}">
+                <div class="flex items-start space-x-3 p-3 rounded-xl border transition-all ${
+                  milestone.completed
+                    ? 'bg-slate-50/50 dark:bg-slate-900/40 border-slate-200/60 dark:border-slate-800/60 opacity-80'
+                    : (isUrgent
+                        ? 'bg-amber-50/40 dark:bg-amber-950/20 border-amber-300 dark:border-amber-700/60 shadow-2xs'
+                        : 'bg-white/80 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/60')
+                }">
                   
-                  <!-- Interactive Node Checkbox -->
+                  <!-- Checkbox Toggle -->
                   <button 
                     data-action="toggle-ms" 
                     data-event-id="${event.id}" 
                     data-ms-id="${milestone.id}"
-                    title="${milestone.completed ? 'Mark incomplete' : 'Mark completed'}"
-                    class="w-8 h-8 rounded-xl flex items-center justify-center transition-all transform active:scale-90 shadow-sm flex-shrink-0 mt-0.5 ${
+                    class="mt-0.5 w-5 h-5 rounded-md border flex items-center justify-center transition-all ${
                       milestone.completed
-                        ? 'bg-emerald-500 text-white shadow-emerald-500/25 ring-2 ring-emerald-500/30'
-                        : (isUrgent
-                            ? 'bg-rose-500/10 text-rose-500 border-2 border-rose-500 beacon-pulse'
-                            : 'bg-white dark:bg-slate-800 text-slate-400 hover:text-blue-500 border border-slate-300 dark:border-slate-700 hover:border-blue-500')
+                        ? 'bg-emerald-600 border-emerald-600 text-white'
+                        : 'border-slate-300 dark:border-slate-600 hover:border-blue-500 bg-white dark:bg-slate-800 text-transparent'
                     }"
                   >
-                    <i class="fas ${milestone.completed ? 'fa-check text-xs' : this.getPhaseIcon(milestone.phase)} text-[11px]"></i>
+                    <i class="fas fa-check text-[10px]"></i>
                   </button>
 
-                  <!-- Milestone Card Container -->
-                  <div class="flex-1 bg-white dark:bg-slate-800/90 p-3.5 rounded-2xl border ${
-                    isUrgent 
-                      ? 'border-rose-500/50 dark:border-rose-500/40 shadow-rose-500/5 shadow-md' 
-                      : 'border-slate-200/80 dark:border-white/5 shadow-2xs'
-                  } group-hover:border-slate-300 dark:group-hover:border-white/10 transition-all">
-                    
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
-                      <div class="flex items-center space-x-2">
-                        <span class="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-700/80 text-slate-700 dark:text-slate-300 font-mono">
-                          ${milestone.phase || 'Round'}
-                        </span>
-                        <h4 class="text-xs sm:text-sm font-bold ${
-                          milestone.completed 
-                            ? 'line-through text-slate-400 dark:text-slate-500' 
-                            : 'text-slate-900 dark:text-white'
-                        }">
-                          ${milestone.title}
-                        </h4>
-                      </div>
+                  <!-- Milestone Content -->
+                  <div class="flex-1 space-y-1">
+                    <div class="flex flex-wrap items-center justify-between gap-1">
+                      <span class="text-xs font-semibold ${milestone.completed ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}">
+                        ${milestone.title}
+                      </span>
 
-                      <div class="flex items-center space-x-2 text-[11px] font-mono">
+                      <div class="flex items-center space-x-1.5 font-mono text-[11px]">
                         ${isUrgent ? `
-                          <span class="px-2 py-0.5 bg-rose-500/15 text-rose-600 dark:text-rose-400 font-bold rounded-lg border border-rose-500/30 animate-pulse">
-                            ${relative}
+                          <span class="px-1.5 py-0.2 rounded text-[10px] font-bold bg-amber-500 text-slate-950 animate-pulse">
+                            ${relTime}
                           </span>
                         ` : `
-                          <span class="${milestone.completed ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400 font-medium'}">
-                            ${this.formatDate(milestone.deadline)}
-                          </span>
+                          <span class="text-slate-400 text-[10px]">${relTime}</span>
                         `}
                       </div>
                     </div>
 
+                    <div class="flex flex-wrap items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400">
+                      <span class="flex items-center space-x-1 font-mono">
+                        <i class="far fa-clock text-[10px] text-slate-400"></i>
+                        <span>${this.formatDate(milestone.deadline)}</span>
+                      </span>
+
+                      ${milestone.phase ? `
+                        <span class="px-1.5 py-0.2 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[10px] font-medium">
+                          ${milestone.phase}
+                        </span>
+                      ` : ''}
+                    </div>
+
                     ${milestone.notes ? `
-                      <p class="text-xs text-slate-500 dark:text-slate-400 mt-2 leading-relaxed">
+                      <p class="text-[11px] text-slate-500 dark:text-slate-400 pt-0.5">
                         ${milestone.notes}
                       </p>
                     ` : ''}
-
-                    ${milestone.location ? `
-                      <div class="mt-2.5 flex items-center space-x-1.5 text-[11px] text-slate-400 dark:text-slate-500">
-                        <i class="fas fa-location-pin text-[10px] text-emerald-500"></i>
-                        <span>${milestone.location}</span>
-                      </div>
-                    ` : ''}
-
                   </div>
 
                 </div>
@@ -360,37 +364,28 @@ export class TimelineView {
           </div>
 
           <!-- Bottom Squad & Resource Bar -->
-          <div class="pt-4 mt-2 border-t border-slate-200 dark:border-white/5 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
             
-            <div class="flex items-center space-x-2.5">
-              <span class="text-[11px] text-slate-400 font-semibold">Squad:</span>
-              <div class="flex -space-x-2 overflow-hidden">
+            <div class="flex items-center space-x-2">
+              <span class="text-[11px] text-slate-400 font-semibold font-mono">Squad:</span>
+              <div class="flex -space-x-1.5 overflow-hidden">
                 ${(event.teamMembers || []).map(m => `
-                  <div class="inline-block h-7 w-7 rounded-full ring-2 ring-white dark:ring-slate-900 bg-gradient-to-br from-blue-600 to-indigo-700 text-white font-bold text-[10px] flex items-center justify-center shadow-xs" title="${m.name} (${m.role})">
+                  <div class="inline-block h-6 w-6 rounded-full ring-2 ring-white dark:ring-slate-900 bg-blue-600 text-white font-bold text-[9px] flex items-center justify-center font-display" title="${m.name} (${m.role})">
                     ${m.avatar || m.name.slice(0, 2).toUpperCase()}
                   </div>
                 `).join('')}
               </div>
             </div>
 
-            <div class="flex items-center space-x-2.5">
-              ${event.links && event.links.github ? `
-                <a href="${event.links.github}" target="_blank" rel="noopener" class="text-slate-400 hover:text-slate-900 dark:hover:text-white p-1" title="GitHub">
-                  <i class="fab fa-github text-sm"></i>
-                </a>
+            <div class="flex items-center space-x-2">
+              ${isUnstop ? `
+                <button data-action="unstop-details" data-id="${event.id}" class="px-2.5 py-1 text-xs unstop-pill hover:opacity-80 rounded-lg font-bold flex items-center space-x-1 transition-all">
+                  <i class="fas fa-bolt text-[10px]"></i>
+                  <span>Unstop Rounds</span>
+                </button>
               ` : ''}
-              ${event.links && event.links.figma ? `
-                <a href="${event.links.figma}" target="_blank" rel="noopener" class="text-slate-400 hover:text-purple-500 p-1" title="Figma">
-                  <i class="fab fa-figma text-sm"></i>
-                </a>
-              ` : ''}
-              ${event.links && event.links.portal ? `
-                <a href="${event.links.portal}" target="_blank" rel="noopener" class="text-slate-400 hover:text-blue-500 p-1" title="Portal">
-                  <i class="fas fa-arrow-up-right-from-square text-xs"></i>
-                </a>
-              ` : ''}
-              
-              <button data-action="survival" data-id="${event.id}" class="px-3 py-1.5 bg-gradient-to-r from-amber-500/10 to-amber-500/20 hover:from-amber-500/20 hover:to-amber-500/30 text-amber-600 dark:text-amber-400 font-bold rounded-xl text-xs flex items-center space-x-1.5 border border-amber-500/30 transition-all">
+
+              <button data-action="survival" data-id="${event.id}" class="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold rounded-lg text-xs flex items-center space-x-1 border border-amber-500/30 transition-all">
                 <i class="fas fa-qrcode text-xs"></i>
                 <span>Digital Pass</span>
               </button>
@@ -462,6 +457,16 @@ export class TimelineView {
         if (evt) {
           sound.playClick();
           ICSExporter.downloadICS([evt], `${evt.title.replace(/[^a-z0-9]/gi, '-').toLowerCase()}.ics`);
+        }
+      };
+    });
+
+    document.querySelectorAll('[data-action="unstop-details"]').forEach(btn => {
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        sound.playClick();
+        if (this.onOpenUnstopPlugin) {
+          this.onOpenUnstopPlugin();
         }
       };
     });

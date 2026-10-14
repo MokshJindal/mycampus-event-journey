@@ -71,7 +71,7 @@ export class EventModal {
     if (!modal) {
       modal = document.createElement('div');
       modal.id = 'event-modal';
-      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 modal-overlay overflow-y-auto';
+      modal.className = 'fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 md:p-8 modal-overlay overflow-y-auto';
       document.body.appendChild(modal);
     }
 
@@ -79,16 +79,16 @@ export class EventModal {
     const platforms = ['Devpost', 'Unstop', 'Luma', 'Devfolio', 'EasyChair', 'Campus Portal', 'Google Form'];
 
     modal.innerHTML = `
-      <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-3xl w-full border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden my-6 transform transition-all animate-in fade-in zoom-in-95 duration-200">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-3xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden my-auto flex flex-col max-h-[90vh] transform transition-all animate-in fade-in zoom-in-95 duration-200">
         
         <!-- Header -->
-        <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-gradient-to-r from-blue-900/10 via-slate-900/10 to-transparent">
+        <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-white/95 dark:bg-slate-900/95 sticky top-0 z-10">
           <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-slate-900 dark:bg-blue-600 text-white flex items-center justify-center text-lg shadow-md">
+            <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center text-sm shadow-xs">
               <i class="fas ${this.isEditing ? 'fa-pen-to-square' : 'fa-plus'}"></i>
             </div>
             <div>
-              <h3 class="font-serif-classic font-bold text-lg sm:text-xl text-slate-900 dark:text-white">
+              <h3 class="font-display font-bold text-base sm:text-lg text-slate-900 dark:text-white">
                 ${this.isEditing ? 'Edit Event Journey' : 'Create New Event Journey'}
               </h3>
               <p class="text-xs text-slate-500 dark:text-slate-400">
@@ -97,8 +97,9 @@ export class EventModal {
             </div>
           </div>
 
-          <button id="close-event-modal" class="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-            <i class="fas fa-xmark text-lg"></i>
+          <button id="close-event-modal" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-lg text-xs font-bold border border-slate-300 dark:border-slate-700 flex items-center space-x-1 transition-colors">
+            <i class="fas fa-xmark"></i>
+            <span>Close</span>
           </button>
         </div>
 

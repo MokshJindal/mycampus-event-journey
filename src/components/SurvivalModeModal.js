@@ -29,14 +29,14 @@ export class SurvivalModeModal {
     if (!modal) {
       modal = document.createElement('div');
       modal.id = 'survival-mode-modal';
-      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 modal-overlay overflow-y-auto';
+      modal.className = 'fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 md:p-8 modal-overlay overflow-y-auto';
       document.body.appendChild(modal);
     }
 
     const event = this.getSelectedEvent();
     if (!event) {
       modal.innerHTML = `
-        <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl max-w-md text-center space-y-4">
+        <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl max-w-md text-center space-y-4 my-auto">
           <p class="text-sm text-slate-500">No active events found for Day-of-Event HUD.</p>
           <button id="close-empty-survival" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold">Close</button>
         </div>
@@ -51,7 +51,7 @@ export class SurvivalModeModal {
     const checkDone = checklist.filter(c => c.completed).length;
 
     modal.innerHTML = `
-      <div class="bg-slate-900 text-white rounded-3xl max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden my-6 transform transition-all animate-in fade-in zoom-in-95 duration-200">
+      <div class="bg-slate-900 text-white rounded-2xl max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden my-auto flex flex-col max-h-[90vh] transform transition-all animate-in fade-in zoom-in-95 duration-200">
         
         <!-- Top HUD Navigation Bar -->
         <div class="px-6 py-4 bg-slate-950/80 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3">
@@ -102,7 +102,7 @@ export class SurvivalModeModal {
                 </span>
               </div>
 
-              <div class="text-lg sm:text-xl font-bold font-serif-classic text-white">
+              <div class="text-lg sm:text-xl font-bold font-display text-white">
                 ${nextMilestone ? nextMilestone.title : 'Congratulations! All event milestones have been completed.'}
               </div>
 
@@ -244,7 +244,7 @@ export class SurvivalModeModal {
 
               <!-- Attendee Pass Credentials -->
               <div class="space-y-1">
-                <div class="font-serif-classic font-bold text-base text-white">
+                <div class="font-display font-bold text-base text-white">
                   Moksh Jindal
                 </div>
                 <div class="text-xs text-blue-300 font-mono">

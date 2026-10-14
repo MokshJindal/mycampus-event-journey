@@ -60,7 +60,7 @@ export class KanbanView {
         
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="font-serif-classic font-bold text-xl sm:text-2xl text-slate-900 dark:text-white">
+            <h2 class="font-display font-bold text-xl sm:text-2xl text-slate-900 dark:text-white">
               Event Lifecycle Pipeline
             </h2>
             <p class="text-xs text-slate-500 dark:text-slate-400">
@@ -130,7 +130,7 @@ export class KanbanView {
           </span>
         </div>
 
-        <h4 class="font-serif font-bold text-sm text-slate-900 dark:text-white leading-tight">
+        <h4 class="font-display font-bold text-sm text-slate-900 dark:text-white leading-tight">
           ${evt.title}
         </h4>
 

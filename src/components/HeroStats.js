@@ -1,10 +1,10 @@
 // ==========================================================================
 // Upgraded HeroStats Component
-// Command Center Banner, Luxury Glass Stat Cards, and Interactive Filters
+// Modern Command Center Banner, Side-Positioned AI Circular Ingest Panel,
+// Clean Stat Cards, and Interactive Category Filters
 // ==========================================================================
 
 import { sound } from '../utils/audio.js';
-import { ICSExporter } from '../utils/icsExporter.js';
 import { StorageManager } from '../utils/storage.js';
 
 export class HeroStats {
@@ -93,169 +93,197 @@ export class HeroStats {
     ];
 
     container.innerHTML = `
-      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-2">
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-2">
         
-        <!-- Luxury Collegiate Command Banner -->
-        <div class="relative overflow-hidden rounded-3xl p-6 sm:p-8 bg-gradient-to-br from-slate-900 via-indigo-950/70 to-slate-950 border border-slate-800 shadow-2xl text-white">
+        <!-- Modern Command Banner with Side AI Ingest Panel -->
+        <div class="relative overflow-hidden rounded-2xl p-6 sm:p-7 bg-slate-900 border border-slate-800 shadow-md text-white">
           
-          <!-- Ambient decorative light beams -->
-          <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
-          <div class="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none"></div>
-
-          <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
             
-            <!-- Left: Student Identity & Headline -->
-            <div class="space-y-3">
-              <div class="flex flex-wrap items-center gap-2.5">
-                <div class="flex items-center space-x-2 px-2.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs">
-                  <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                  <span class="font-semibold text-slate-200">Autumn Season 2026 Active</span>
+            <!-- Left Side: Student Identity & Headline (7 Cols) -->
+            <div class="lg:col-span-7 space-y-3">
+              <div class="flex flex-wrap items-center gap-2">
+                <div class="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs text-blue-400 font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+                  <span>Autumn 2026 Season</span>
                 </div>
-                <span class="text-xs text-slate-400">•</span>
-                <span class="text-xs font-mono text-amber-400 font-semibold">
-                  ${this.profile.name} (${this.profile.rollNo})
+                <span class="text-xs text-slate-500">•</span>
+                <span class="text-xs font-mono text-slate-300 font-semibold">
+                  ${this.profile.name} <span class="text-slate-500">(${this.profile.rollNo})</span>
                 </span>
               </div>
 
-              <h1 class="text-2xl sm:text-4xl font-serif font-bold tracking-tight text-white leading-tight">
-                One Intelligent Timeline for Every Event
+              <h1 class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-white leading-tight">
+                One Clean Timeline for Every Event
               </h1>
 
-              <p class="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
-                Seamlessly unify registrations from Devpost, Unstop, Luma, and campus circulars with automated multi-phase milestone tracking, conflict alerts, and Day-of-Event survival tools.
+              <p class="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
+                Bring scattered hackathon registrations, Unstop competition rounds, workshop checkpoints, and campus venues into a single synchronized schedule.
               </p>
             </div>
 
-            <!-- Right: Quick Sync Action Suite -->
-            <div class="flex flex-wrap lg:flex-col items-stretch gap-2.5 flex-shrink-0">
-              <button id="btn-export-ics" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-bold border border-white/15 backdrop-blur-md flex items-center justify-center space-x-2 shadow-sm transition-all">
-                <i class="far fa-calendar-plus text-blue-400"></i>
-                <span>Export to Calendar (.ICS)</span>
-              </button>
+            <!-- Right Side: Dedicated AI Smart Ingest Card (5 Cols) -->
+            <div class="lg:col-span-5 bg-slate-800/80 rounded-xl p-4 border border-slate-700/80 shadow-inner flex flex-col justify-between space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="w-7 h-7 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center text-xs">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                  </span>
+                  <span class="font-display font-bold text-xs sm:text-sm text-white">Smart Ingest Engine</span>
+                </div>
+                <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Side Assistant</span>
+              </div>
 
-              <button id="btn-discover-feed" class="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-bold rounded-xl text-xs flex items-center justify-center space-x-2 shadow-md shadow-amber-500/20 transition-all">
-                <i class="fas fa-compass"></i>
-                <span>Explore Campus Feed</span>
-              </button>
+              <p class="text-[11px] text-slate-300 leading-snug">
+                Paste any unstructured email, WhatsApp club circular, or Unstop notice to auto-build milestones and venue tags.
+              </p>
+
+              <div class="flex items-center space-x-2 pt-1">
+                <button 
+                  id="hero-side-ingest-btn" 
+                  class="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 shadow-sm transition-all"
+                >
+                  <i class="fas fa-paste text-xs"></i>
+                  <span>Paste & Auto-Import</span>
+                </button>
+
+                <button 
+                  id="hero-side-unstop-btn"
+                  title="Open Unstop Plugin" 
+                  class="py-2 px-3 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg text-xs font-bold flex items-center space-x-1 transition-all"
+                >
+                  <i class="fas fa-bolt text-xs"></i>
+                  <span>Unstop</span>
+                </button>
+              </div>
+
+              <!-- Quick Presets -->
+              <div class="flex items-center space-x-1.5 pt-1 text-[10px] text-slate-400 overflow-x-auto">
+                <span class="text-slate-500 shrink-0">Presets:</span>
+                <button data-preset="devpost" class="hero-preset-btn px-2 py-0.5 rounded bg-slate-700/60 hover:bg-slate-700 text-slate-300">Devpost</button>
+                <button data-preset="unstop" class="hero-preset-btn px-2 py-0.5 rounded bg-slate-700/60 hover:bg-slate-700 text-slate-300">Unstop</button>
+                <button data-preset="luma" class="hero-preset-btn px-2 py-0.5 rounded bg-slate-700/60 hover:bg-slate-700 text-slate-300">Luma</button>
+                <button data-preset="whatsapp" class="hero-preset-btn px-2 py-0.5 rounded bg-slate-700/60 hover:bg-slate-700 text-slate-300">WhatsApp</button>
+              </div>
             </div>
 
           </div>
 
         </div>
 
-        <!-- 4 Glass Stat Cards (Linear / Vercel Aesthetics) -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
+        <!-- 4 Clean Stat Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mt-4">
           
           <!-- Card 1: Active Journeys -->
-          <div class="glass-card p-5 rounded-2xl relative overflow-hidden group">
+          <div class="glass-card p-4 rounded-xl relative overflow-hidden group">
             <div class="flex items-center justify-between">
               <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                 Active Journeys
               </span>
-              <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center text-sm">
+              <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center text-xs">
                 <i class="fas fa-route"></i>
               </div>
             </div>
-            <div class="mt-3 flex items-baseline space-x-2">
-              <span class="text-3xl font-extrabold font-serif text-slate-900 dark:text-white">
+            <div class="mt-2.5 flex items-baseline space-x-2">
+              <span class="text-2xl font-display font-bold text-slate-900 dark:text-white">
                 ${this.stats.activeEvents}
               </span>
               <span class="text-xs text-slate-400">
                 of ${this.stats.totalEvents} registered
               </span>
             </div>
-            <div class="mt-3 pt-3 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+            <div class="mt-2.5 pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
               <span>${this.stats.completedEvents} completed</span>
               <span class="font-bold text-amber-500">${this.stats.wonEvents} podiums</span>
             </div>
           </div>
 
           <!-- Card 2: Urgency Radar Countdown -->
-          <div class="glass-card p-5 rounded-2xl relative overflow-hidden ${nextImminent ? 'border-amber-500/40' : ''}">
+          <div class="glass-card p-4 rounded-xl relative overflow-hidden ${nextImminent ? 'border-amber-500/40' : ''}">
             <div class="flex items-center justify-between">
               <span class="text-[11px] font-bold text-amber-500 uppercase tracking-wider flex items-center space-x-1.5">
                 <i class="fas fa-bolt"></i>
                 <span>Urgent Target (&lt;48h)</span>
               </span>
-              <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center text-sm">
+              <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center text-xs">
                 <i class="fas fa-stopwatch"></i>
               </div>
             </div>
-            <div class="mt-3" id="hero-countdown-ticker">
+            <div class="mt-2" id="hero-countdown-ticker">
               <!-- Live countdown injected here -->
             </div>
-            <div class="mt-2 text-xs truncate font-semibold text-slate-800 dark:text-slate-200" title="${nextImminent ? nextImminent.milestoneTitle : ''}">
+            <div class="mt-1.5 text-xs truncate font-semibold text-slate-800 dark:text-slate-200" title="${nextImminent ? nextImminent.milestoneTitle : ''}">
               ${nextImminent ? `<span class="text-blue-500">${nextImminent.eventTitle}:</span> ${nextImminent.milestoneTitle}` : 'All checkpoints completed'}
             </div>
           </div>
 
           <!-- Card 3: Clash Radar -->
-          <div class="glass-card p-5 rounded-2xl relative overflow-hidden cursor-pointer ${this.stats.clashesCount > 0 ? 'border-rose-500/40 hover:border-rose-500' : ''}" id="card-clash-trigger">
+          <div class="glass-card p-4 rounded-xl relative overflow-hidden cursor-pointer ${this.stats.clashesCount > 0 ? 'border-rose-500/40 hover:border-rose-500' : ''}" id="card-clash-trigger">
             <div class="flex items-center justify-between">
               <span class="text-[11px] font-bold ${this.stats.clashesCount > 0 ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'} uppercase tracking-wider">
                 Schedule Clashes
               </span>
-              <div class="w-9 h-9 rounded-xl ${this.stats.clashesCount > 0 ? 'bg-rose-500/10 text-rose-500 beacon-pulse' : 'bg-emerald-500/10 text-emerald-500'} flex items-center justify-center text-sm">
+              <div class="w-8 h-8 rounded-lg ${this.stats.clashesCount > 0 ? 'bg-rose-500/10 text-rose-500 beacon-pulse' : 'bg-emerald-500/10 text-emerald-500'} flex items-center justify-center text-xs">
                 <i class="fas fa-satellite-dish"></i>
               </div>
             </div>
-            <div class="mt-3 flex items-baseline space-x-2">
-              <span class="text-3xl font-extrabold font-serif ${this.stats.clashesCount > 0 ? 'text-rose-500' : 'text-slate-900 dark:text-white'}">
+            <div class="mt-2.5 flex items-baseline space-x-2">
+              <span class="text-2xl font-display font-bold ${this.stats.clashesCount > 0 ? 'text-rose-500' : 'text-slate-900 dark:text-white'}">
                 ${this.stats.clashesCount}
               </span>
               <span class="text-xs text-slate-400">
                 ${this.stats.clashesCount === 1 ? 'overlap detected' : 'overlaps detected'}
               </span>
             </div>
-            <div class="mt-3 pt-3 border-t border-slate-100 dark:border-white/5 flex items-center text-xs font-semibold ${
+            <div class="mt-2.5 pt-2 border-t border-slate-100 dark:border-white/5 flex items-center text-xs font-semibold ${
               this.stats.clashesCount > 0 ? 'text-rose-500' : 'text-emerald-500'
             }">
-              ${this.stats.clashesCount > 0 ? '<i class="fas fa-triangle-exclamation mr-1.5"></i> Resolve in Clash Radar →' : '<i class="fas fa-shield-halved mr-1.5"></i> Optimal buffers'}
+              ${this.stats.clashesCount > 0 ? '<i class="fas fa-triangle-exclamation mr-1.5"></i> Resolve in Clash Radar →' : '<i class="fas fa-shield-halved mr-1.5"></i> Optimal transit buffers'}
             </div>
           </div>
 
           <!-- Card 4: Student XP & Level -->
-          <div class="glass-card p-5 rounded-2xl relative overflow-hidden cursor-pointer" id="card-passport-trigger">
+          <div class="glass-card p-4 rounded-xl relative overflow-hidden cursor-pointer" id="card-passport-trigger">
             <div class="flex items-center justify-between">
-              <span class="text-[11px] font-bold text-purple-500 uppercase tracking-wider">
+              <span class="text-[11px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-wider">
                 Event XP & Honors
               </span>
-              <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center text-sm">
+              <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center text-xs">
                 <i class="fas fa-medal"></i>
               </div>
             </div>
-            <div class="mt-3 flex items-baseline space-x-2">
-              <span class="text-3xl font-extrabold font-serif text-purple-600 dark:text-purple-400">
+            <div class="mt-2.5 flex items-baseline space-x-2">
+              <span class="text-2xl font-display font-bold text-indigo-600 dark:text-indigo-400">
                 ${this.stats.earnedXP} XP
               </span>
               <span class="text-xs text-slate-400">
                 / ${this.stats.totalXP} max
               </span>
             </div>
-            <div class="mt-3 w-full bg-slate-200 dark:bg-slate-700/60 h-1.5 rounded-full overflow-hidden">
-              <div class="bg-gradient-to-r from-purple-500 to-indigo-500 h-1.5 rounded-full" style="width: ${Math.min(100, Math.round((this.stats.earnedXP / Math.max(1, this.stats.totalXP)) * 100))}%"></div>
+            <div class="mt-2.5 w-full bg-slate-200 dark:bg-slate-700/60 h-1.5 rounded-full overflow-hidden">
+              <div class="bg-indigo-600 dark:bg-indigo-500 h-1.5 rounded-full" style="width: ${Math.min(100, Math.round((this.stats.earnedXP / Math.max(1, this.stats.totalXP)) * 100))}%"></div>
             </div>
           </div>
 
         </div>
 
         <!-- Filter Chips Nav -->
-        <div class="mt-5 flex flex-wrap items-center justify-between gap-3 pt-2">
+        <div class="mt-4 flex flex-wrap items-center justify-between gap-3 pt-1">
           <div class="flex flex-wrap items-center gap-1.5">
             ${categories.map(cat => `
-              <button data-cat="${cat.id}" class="hero-cat-pill px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 ${
+              <button data-cat="${cat.id}" class="hero-cat-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center space-x-1.5 ${
                 this.currentCategory === cat.id
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                  : 'bg-white/80 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'bg-white/90 dark:bg-slate-900/90 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800'
               }">
-                <i class="fas ${cat.icon} text-[11px]"></i>
+                <i class="fas ${cat.icon} text-[10px]"></i>
                 <span>${cat.label}</span>
               </button>
             `).join('')}
           </div>
 
           <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center space-x-2">
-            <span>Displaying <strong class="text-slate-900 dark:text-white font-mono">${this.events.length}</strong> journeys</span>
+            <span>Tracking <strong class="text-slate-900 dark:text-white font-mono">${this.events.length}</strong> event journeys</span>
           </div>
         </div>
 
@@ -275,6 +303,30 @@ export class HeroStats {
       };
     });
 
+    const btnSideIngest = document.getElementById('hero-side-ingest-btn');
+    if (btnSideIngest) {
+      btnSideIngest.onclick = () => {
+        sound.playClick();
+        this.onOpenModal('smart-ingest');
+      };
+    }
+
+    const btnSideUnstop = document.getElementById('hero-side-unstop-btn');
+    if (btnSideUnstop) {
+      btnSideUnstop.onclick = () => {
+        sound.playClick();
+        this.onOpenModal('unstop-plugin');
+      };
+    }
+
+    document.querySelectorAll('.hero-preset-btn').forEach(btn => {
+      btn.onclick = () => {
+        sound.playClick();
+        const preset = btn.getAttribute('data-preset');
+        this.onOpenModal('smart-ingest', preset);
+      };
+    });
+
     const clashCard = document.getElementById('card-clash-trigger');
     if (clashCard) {
       clashCard.onclick = () => {
@@ -288,22 +340,6 @@ export class HeroStats {
       passCard.onclick = () => {
         sound.playClick();
         this.onOpenModal('passport');
-      };
-    }
-
-    const btnIcs = document.getElementById('btn-export-ics');
-    if (btnIcs) {
-      btnIcs.onclick = () => {
-        sound.playClick();
-        ICSExporter.downloadICS(this.events);
-      };
-    }
-
-    const btnDiscover = document.getElementById('btn-discover-feed');
-    if (btnDiscover) {
-      btnDiscover.onclick = () => {
-        sound.playClick();
-        this.onOpenModal('discover');
       };
     }
   }

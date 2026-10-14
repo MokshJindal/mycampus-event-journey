@@ -1,7 +1,8 @@
 // ==========================================================================
-// PassportModal Component
+// Upgraded PassportModal Component
 // Student Event Passport, Skills Radar, Verified Badges,
 // and 1-Click Printable Resume Brag Sheet Export
+// Fixed Desktop Viewport Clipping & Foolproof Closing Handlers (Esc / Click / Button)
 // ==========================================================================
 
 import { sound } from '../utils/audio.js';
@@ -11,8 +12,11 @@ export class PassportModal {
   constructor({ events, profile, onClose }) {
     this.events = events;
     this.profile = profile || StorageManager.getProfile();
-    this.onClose = onClose;
+    this.onClose = onClose || (() => {});
     this.viewMode = 'passport'; // 'passport' | 'resume'
+    this.escHandler = (e) => {
+      if (e.key === 'Escape') this.close();
+    };
   }
 
   render() {
@@ -20,7 +24,8 @@ export class PassportModal {
     if (!modal) {
       modal = document.createElement('div');
       modal.id = 'passport-modal';
-      modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 modal-overlay overflow-y-auto';
+      // Use items-start so content never clips off the top in desktop
+      modal.className = 'fixed inset-0 z-50 flex items-start justify-center p-3 sm:p-6 md:p-8 modal-overlay overflow-y-auto';
       document.body.appendChild(modal);
     }
 
@@ -32,25 +37,25 @@ export class PassportModal {
     const level = Math.floor(totalXP / 250) + 1;
 
     modal.innerHTML = `
-      <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-4xl w-full border border-slate-200 dark:border-slate-700 shadow-2xl overflow-hidden my-6 transform transition-all animate-in fade-in zoom-in-95 duration-200">
+      <div class="bg-white dark:bg-slate-900 rounded-2xl max-w-4xl w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden my-auto flex flex-col max-h-[90vh] transform transition-all animate-in fade-in zoom-in-95 duration-200">
         
-        <!-- Header -->
-        <div class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-gradient-to-r from-purple-900/10 via-indigo-900/10 to-transparent">
+        <!-- Pinned Sticky Top Header -->
+        <div class="p-4 sm:p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md sticky top-0 z-20">
           <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-indigo-600 text-white flex items-center justify-center text-lg shadow-md">
+            <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-base shadow-xs">
               <i class="fas fa-id-card-clip"></i>
             </div>
             <div>
               <div class="flex items-center space-x-2">
-                <h3 class="font-serif-classic font-bold text-lg sm:text-xl text-slate-900 dark:text-white">
+                <h3 class="font-display font-bold text-base sm:text-lg text-slate-900 dark:text-white">
                   Student Event Passport & Brag Sheet
                 </h3>
-                <span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300 border border-purple-300 dark:border-purple-800">
+                <span class="px-2 py-0.5 text-[10px] font-mono font-bold rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800">
                   Level ${level} Fellow
                 </span>
               </div>
               <p class="text-xs text-slate-500 dark:text-slate-400">
-                Verified portfolio of hackathon achievements, research symposiums, and university fests.
+                Verified portfolio of hackathon achievements, symposiums, and university competitions.
               </p>
             </div>
           </div>
@@ -61,14 +66,38 @@ export class PassportModal {
               <span>${this.viewMode === 'resume' ? 'View Passport' : 'Print Brag Sheet'}</span>
             </button>
 
-            <button id="close-passport-modal" class="p-2 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-              <i class="fas fa-xmark text-lg"></i>
+            <!-- Prominent Close Button -->
+            <button 
+              id="close-passport-modal" 
+              class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-lg border border-slate-300 dark:border-slate-700 flex items-center space-x-1.5 transition-colors shadow-2xs"
+              title="Close Modal (Esc)"
+            >
+              <i class="fas fa-xmark text-sm"></i>
+              <span>Close</span>
+              <kbd class="text-[9px] font-mono text-slate-400 dark:text-slate-500 hidden sm:inline">Esc</kbd>
             </button>
           </div>
         </div>
 
-        <div class="p-6">
-          ${this.viewMode === 'passport' ? this.renderPassportView(totalXP, level, wonEvents, completedEvents) : this.renderResumeView(wonEvents, completedEvents, totalXP)}
+        <!-- Scrollable Content Body -->
+        <div class="p-5 sm:p-6 overflow-y-auto flex-1 space-y-6 overscroll-contain">
+          ${this.viewMode === 'passport' 
+            ? this.renderPassportView(totalXP, level, wonEvents, completedEvents) 
+            : this.renderResumeView(wonEvents, completedEvents, totalXP)}
+        </div>
+
+        <!-- Sticky Bottom Footer Bar for Easy Dismissal -->
+        <div class="p-3 sm:p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/90 flex items-center justify-between shrink-0 text-xs text-slate-500">
+          <div class="flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            <span>Verified IIITD Credentials</span>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <button id="close-passport-footer-btn" class="px-4 py-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-lg font-semibold transition-colors">
+              Done & Close
+            </button>
+          </div>
         </div>
 
       </div>
@@ -82,14 +111,14 @@ export class PassportModal {
       <div class="space-y-6">
         
         <!-- Student Identity Header Card -->
-        <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 rounded-2xl border border-slate-700/80 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="bg-slate-900 text-white p-5 sm:p-6 rounded-xl border border-slate-800 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
           <div class="flex items-center space-x-4">
-            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-indigo-600 text-white font-bold font-serif-classic text-2xl flex items-center justify-center shadow-md border-2 border-white/20">
+            <div class="w-14 h-14 rounded-xl bg-blue-600 text-white font-bold font-display text-xl flex items-center justify-center shadow-sm">
               ${this.profile.avatar}
             </div>
             <div>
               <div class="flex items-center space-x-2">
-                <h4 class="font-serif-classic font-bold text-xl text-white">
+                <h4 class="font-display font-bold text-lg sm:text-xl text-white">
                   ${this.profile.name}
                 </h4>
                 <span class="text-amber-400 text-xs" title="Verified Collegiate Hacker">
@@ -105,10 +134,10 @@ export class PassportModal {
             </div>
           </div>
 
-          <div class="text-center sm:text-right bg-white/10 px-4 py-3 rounded-xl border border-white/10">
-            <span class="text-[10px] text-amber-300 uppercase font-mono font-bold tracking-wider block">Total Lifetime XP</span>
-            <span class="font-mono text-2xl font-extrabold text-white">${totalXP}</span>
-            <span class="text-[10px] text-slate-300 block">Top 5% of Department</span>
+          <div class="text-center sm:text-right bg-slate-800/80 px-4 py-2.5 rounded-xl border border-slate-700">
+            <span class="text-[10px] text-amber-400 uppercase font-mono font-bold tracking-wider block">Total Earned XP</span>
+            <span class="font-mono text-2xl font-bold text-white">${totalXP}</span>
+            <span class="text-[10px] text-slate-400 block">Top 5% Cohort</span>
           </div>
         </div>
 
@@ -121,133 +150,114 @@ export class PassportModal {
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div class="p-3.5 rounded-xl border border-amber-300 dark:border-amber-700/60 bg-amber-50/40 dark:bg-amber-950/20 text-center space-y-1.5">
-              <div class="w-10 h-10 rounded-full bg-amber-500 text-white flex items-center justify-center text-lg mx-auto shadow-sm">
+              <div class="w-9 h-9 rounded-full bg-amber-500 text-white flex items-center justify-center text-base mx-auto shadow-xs">
                 <i class="fas fa-trophy"></i>
               </div>
-              <div class="font-bold text-xs text-slate-900 dark:text-white">Hackathon Victor</div>
+              <div class="font-bold text-xs text-slate-900 dark:text-white font-display">Hackathon Victor</div>
               <div class="text-[10px] text-slate-500 dark:text-slate-400">EthIndia '26 Podium Finish</div>
             </div>
 
             <div class="p-3.5 rounded-xl border border-blue-300 dark:border-blue-700/60 bg-blue-50/40 dark:bg-blue-950/20 text-center space-y-1.5">
-              <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center text-lg mx-auto shadow-sm">
+              <div class="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center text-base mx-auto shadow-xs">
                 <i class="fas fa-microphone-lines"></i>
               </div>
-              <div class="font-bold text-xs text-slate-900 dark:text-white">Oral Paper Defense</div>
+              <div class="font-bold text-xs text-slate-900 dark:text-white font-display">Oral Paper Defense</div>
               <div class="text-[10px] text-slate-500 dark:text-slate-400">ACM Research Symposium</div>
             </div>
 
-            <div class="p-3.5 rounded-xl border border-purple-300 dark:border-purple-700/60 bg-purple-50/40 dark:bg-purple-950/20 text-center space-y-1.5">
-              <div class="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center text-lg mx-auto shadow-sm">
+            <div class="p-3.5 rounded-xl border border-indigo-300 dark:border-indigo-700/60 bg-indigo-50/40 dark:bg-indigo-950/20 text-center space-y-1.5">
+              <div class="w-9 h-9 rounded-full bg-indigo-600 text-white flex items-center justify-center text-base mx-auto shadow-xs">
                 <i class="fas fa-shield-halved"></i>
               </div>
-              <div class="font-bold text-xs text-slate-900 dark:text-white">SIH Finalist</div>
+              <div class="font-bold text-xs text-slate-900 dark:text-white font-display">SIH Finalist</div>
               <div class="text-[10px] text-slate-500 dark:text-slate-400">Smart India Hackathon '26</div>
             </div>
 
             <div class="p-3.5 rounded-xl border border-emerald-300 dark:border-emerald-700/60 bg-emerald-50/40 dark:bg-emerald-950/20 text-center space-y-1.5">
-              <div class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center text-lg mx-auto shadow-sm">
+              <div class="w-9 h-9 rounded-full bg-emerald-600 text-white flex items-center justify-center text-base mx-auto shadow-xs">
                 <i class="fas fa-wand-magic"></i>
               </div>
-              <div class="font-bold text-xs text-slate-900 dark:text-white">WASM Practitioner</div>
-              <div class="text-[10px] text-slate-500 dark:text-slate-400">GDG GenAI Masterclass</div>
+              <div class="font-bold text-xs text-slate-900 dark:text-white font-display">WASM Practitioner</div>
+              <div class="text-[10px] text-slate-500 dark:text-slate-400">GDG AI Masterclass</div>
             </div>
           </div>
         </div>
 
-        <!-- Skills Matrix -->
-        <div class="bg-slate-50 dark:bg-slate-800/60 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 space-y-3">
-          <div class="flex items-center justify-between">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-              Domain Competencies & Acquired Skills
-            </h4>
-            <span class="text-[11px] text-slate-500">Based on verified event submissions</span>
-          </div>
-
-          <div class="space-y-2.5 pt-1">
-            <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-800 dark:text-slate-200 font-semibold">AI/ML & Systems Engineering</span>
-                <span class="font-mono text-blue-600 dark:text-blue-400">92%</span>
-              </div>
-              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
-                <div class="bg-blue-600 h-2 rounded-full" style="width: 92%;"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-800 dark:text-slate-200 font-semibold">Zero-Knowledge & Web3 Architecture</span>
-                <span class="font-mono text-purple-600 dark:text-purple-400">88%</span>
-              </div>
-              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
-                <div class="bg-purple-600 h-2 rounded-full" style="width: 88%;"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-800 dark:text-slate-200 font-semibold">Pitching, Defenses & Technical Writing</span>
-                <span class="font-mono text-amber-600 dark:text-amber-400">85%</span>
-              </div>
-              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
-                <div class="bg-amber-500 h-2 rounded-full" style="width: 85%;"></div>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between text-xs font-medium mb-1">
-                <span class="text-slate-800 dark:text-slate-200 font-semibold">Quantitative Modeling & Algorithmic Trading</span>
-                <span class="font-mono text-cyan-600 dark:text-cyan-400">76%</span>
-              </div>
-              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
-                <div class="bg-cyan-500 h-2 rounded-full" style="width: 76%;"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Verified Event Participation Ledger -->
+        <!-- 5-Dimensional Skills Radar Breakdown -->
         <div>
-          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2">
-            Verified Event History Ledger
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center space-x-1.5">
+            <i class="fas fa-chart-pie text-blue-500"></i>
+            <span>Verified Collegiate Competencies</span>
           </h4>
-          <div class="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
-            <table class="w-full text-left text-xs">
-              <thead class="bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-700">
-                <tr>
-                  <th class="p-3">Event</th>
-                  <th class="p-3">Platform</th>
-                  <th class="p-3">Role & Team</th>
-                  <th class="p-3">Stage Result</th>
-                  <th class="p-3 text-right">Prize / XP</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100 dark:divide-slate-800 text-slate-700 dark:text-slate-300">
-                ${this.events.map(e => `
-                  <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
-                    <td class="p-3 font-semibold text-slate-900 dark:text-white">
-                      ${e.title}
-                    </td>
-                    <td class="p-3 font-mono text-[11px] text-slate-500">
-                      ${e.platform || 'Campus'}
-                    </td>
-                    <td class="p-3">
-                      ${e.teamName || 'Solo'}
-                    </td>
-                    <td class="p-3">
-                      <span class="px-2 py-0.5 rounded text-[10px] font-bold ${
-                        e.stage === 'won' ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-                      }">
-                        ${e.stage ? e.stage.toUpperCase() : 'REGISTERED'}
-                      </span>
-                    </td>
-                    <td class="p-3 text-right font-mono font-bold text-purple-600 dark:text-purple-400">
-                      +${e.xpReward || 100} XP
-                    </td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
+
+          <div class="space-y-3 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-1">
+                <span class="text-slate-700 dark:text-slate-300">AI / Machine Learning & LLM Systems</span>
+                <span class="font-mono text-blue-600 dark:text-blue-400">88% Mastery</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div class="bg-blue-600 h-2 rounded-full" style="width: 88%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-1">
+                <span class="text-slate-700 dark:text-slate-300">Distributed Systems & High-Perf Backend</span>
+                <span class="font-mono text-indigo-600 dark:text-indigo-400">82% Mastery</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div class="bg-indigo-600 h-2 rounded-full" style="width: 82%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-1">
+                <span class="text-slate-700 dark:text-slate-300">Web3 & Zero-Knowledge Cryptography</span>
+                <span class="font-mono text-purple-600 dark:text-purple-400">74% Mastery</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div class="bg-purple-600 h-2 rounded-full" style="width: 74%"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs font-semibold mb-1">
+                <span class="text-slate-700 dark:text-slate-300">Live Pitching & Venture Capital Defense</span>
+                <span class="font-mono text-amber-600 dark:text-amber-400">92% Mastery</span>
+              </div>
+              <div class="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                <div class="bg-amber-500 h-2 rounded-full" style="width: 92%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Verified Journey List -->
+        <div>
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center space-x-1.5">
+            <i class="fas fa-list-check text-emerald-500"></i>
+            <span>Track Record & Participated Rounds (${this.events.length})</span>
+          </h4>
+
+          <div class="space-y-2">
+            ${this.events.map(evt => `
+              <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800/60 flex items-center justify-between text-xs">
+                <div class="flex items-center space-x-3">
+                  <span class="w-2 h-2 rounded-full ${evt.stage === 'won' ? 'bg-amber-400' : 'bg-blue-500'}"></span>
+                  <div>
+                    <span class="font-bold font-display text-slate-900 dark:text-white">${evt.title}</span>
+                    <span class="text-[11px] text-slate-400 block">${evt.category} • ${evt.platform} • ${evt.teamName || 'Solo'}</span>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-3 font-mono">
+                  <span class="text-slate-400">${(evt.milestones || []).filter(m => m.completed).length}/${(evt.milestones || []).length} Milestones</span>
+                  <span class="px-2 py-0.5 rounded font-bold ${evt.stage === 'won' ? 'bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400' : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300'}">
+                    ${evt.stage.toUpperCase()}
+                  </span>
+                </div>
+              </div>
+            `).join('')}
           </div>
         </div>
 
@@ -257,68 +267,76 @@ export class PassportModal {
 
   renderResumeView(wonEvents, completedEvents, totalXP) {
     return `
-      <div id="print-section" class="bg-white text-slate-900 p-8 rounded-2xl border border-slate-300 shadow-sm space-y-6 max-w-3xl mx-auto">
+      <div id="print-section" class="bg-white text-slate-900 p-8 rounded-xl border border-slate-200 shadow-sm space-y-6 text-sm font-sans">
         
-        <!-- Header for Formal Resume Brag Sheet -->
-        <div class="border-b-2 border-slate-900 pb-4 flex items-start justify-between">
+        <!-- Printable Header -->
+        <div class="border-b-2 border-slate-900 pb-4 flex justify-between items-start">
           <div>
-            <h1 class="text-2xl font-serif-classic font-bold tracking-tight text-slate-900">
-              ${this.profile.name}
-            </h1>
-            <p class="text-xs font-mono text-slate-600 mt-0.5">
-              ${this.profile.department} • ${this.profile.university}
+            <h1 class="text-2xl font-bold font-display text-slate-900">${this.profile.name}</h1>
+            <p class="text-xs text-slate-600 mt-0.5 font-mono">
+              Roll No: ${this.profile.rollNo} • ${this.profile.department} • ${this.profile.university}
             </p>
             <p class="text-xs text-slate-500">
-              Email: ${this.profile.email} • Student ID: ${this.profile.rollNo}
+              Verified Collegiate Competition & Research Colloquium Brag Sheet
             </p>
           </div>
           <div class="text-right">
-            <span class="text-[10px] uppercase font-bold tracking-widest text-slate-500 block">Executive Event Portfolio</span>
-            <span class="font-serif-classic font-bold text-lg text-slate-900">${totalXP} XP Recorded</span>
+            <span class="text-xs font-mono font-bold px-2 py-1 bg-slate-100 border border-slate-300 rounded">
+              Total XP: ${totalXP}
+            </span>
+            <span class="block text-[10px] text-slate-500 mt-1">Generated: ${new Date().toLocaleDateString()}</span>
           </div>
         </div>
 
-        <!-- Academic & Event Honors Section -->
+        <!-- Honors & Key Wins -->
         <div>
-          <h2 class="text-xs font-bold uppercase tracking-widest text-blue-900 border-b border-slate-200 pb-1 mb-3">
-            Major Hackathon Honors & Competitions
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-1 mb-3">
+            Honors & Podium Finishes
           </h2>
-          <div class="space-y-3 text-xs">
+          <div class="space-y-3">
+            ${wonEvents.length > 0 ? wonEvents.map(w => `
+              <div>
+                <div class="flex justify-between items-baseline">
+                  <span class="font-bold text-slate-900">${w.title}</span>
+                  <span class="font-mono text-xs text-amber-700 font-bold">1st Place / Podium Winner</span>
+                </div>
+                <p class="text-xs text-slate-600">${w.description || 'Awarded flagship recognition and cash prize pool.'}</p>
+                <div class="text-[11px] text-slate-500 mt-0.5">
+                  Platform: ${w.platform} • Team: ${w.teamName} (${w.registrationId}) • Skills: ${(w.skills || []).join(', ')}
+                </div>
+              </div>
+            `).join('') : '<p class="text-xs text-slate-500">Multiple active rounds in preparation for podium defense.</p>'}
+          </div>
+        </div>
+
+        <!-- All Participated Events -->
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-900 border-b border-slate-300 pb-1 mb-3">
+            Verified Event Record & Multi-Round Milestones
+          </h2>
+          <div class="space-y-3">
             ${this.events.map(e => `
-              <div class="border-b border-slate-100 pb-2">
+              <div>
                 <div class="flex justify-between items-baseline">
                   <span class="font-bold text-slate-900">${e.title}</span>
-                  <span class="font-mono text-[11px] text-slate-500">${e.platform || 'Campus'}</span>
+                  <span class="text-xs text-slate-600">${e.category} (${e.platform})</span>
                 </div>
-                <div class="text-slate-600 mt-0.5">
-                  Role: <strong>${e.teamName || 'Solo'}</strong> • ${e.description || ''}
-                </div>
-                <div class="text-slate-500 text-[11px] mt-0.5">
-                  Status: <strong>${e.stage ? e.stage.toUpperCase() : 'PARTICIPANT'}</strong> ${e.prizePool ? `• Honors: ${e.prizePool}` : ''}
+                <p class="text-xs text-slate-600">${e.description || ''}</p>
+                <div class="mt-1 flex flex-wrap gap-1">
+                  ${(e.milestones || []).map(m => `
+                    <span class="text-[10px] px-1.5 py-0.5 rounded ${m.completed ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-600 border border-slate-200'}">
+                      ${m.completed ? '✓' : '○'} ${m.title}
+                    </span>
+                  `).join('')}
                 </div>
               </div>
             `).join('')}
           </div>
         </div>
 
-        <!-- Competencies Section -->
-        <div>
-          <h2 class="text-xs font-bold uppercase tracking-widest text-blue-900 border-b border-slate-200 pb-1 mb-2">
-            Demonstrated Technical Competencies
-          </h2>
-          <p class="text-xs text-slate-700 leading-relaxed">
-            Full-Stack Web Development, Distributed Systems, Zero-Knowledge Proofs (Circom/Noir), WebAssembly, High-Frequency Trading Models, Rapid Prototyping, Technical Architecture Defense.
-          </p>
-        </div>
-
-        <div class="pt-4 border-t border-slate-300 flex justify-between items-center text-[10px] text-slate-400">
-          <span>Generated via MyCampus: Your Event Journey • IIIT Delhi</span>
-          <span>Verified Timestamp: ${new Date().toLocaleDateString()}</span>
-        </div>
-
-        <!-- Print Action CTA inside modal -->
-        <div class="no-print pt-2 flex justify-center">
-          <button id="btn-trigger-print" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md flex items-center space-x-2 transition-all">
+        <!-- Print Action Trigger -->
+        <div class="no-print pt-2 flex justify-center space-x-3">
+          <button id="btn-trigger-print" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-xs flex items-center space-x-2 transition-all">
             <i class="fas fa-print"></i>
             <span>Print or Save as PDF</span>
           </button>
@@ -331,6 +349,9 @@ export class PassportModal {
   attachEvents() {
     const closeBtn = document.getElementById('close-passport-modal');
     if (closeBtn) closeBtn.onclick = () => this.close();
+
+    const footerCloseBtn = document.getElementById('close-passport-footer-btn');
+    if (footerCloseBtn) footerCloseBtn.onclick = () => this.close();
 
     const toggleBtn = document.getElementById('btn-toggle-resume');
     if (toggleBtn) {
@@ -347,10 +368,24 @@ export class PassportModal {
         window.print();
       };
     }
+
+    // Dismiss on backdrop click
+    const modal = document.getElementById('passport-modal');
+    if (modal) {
+      modal.onclick = (e) => {
+        if (e.target === modal) {
+          this.close();
+        }
+      };
+    }
+
+    // Register Escape key listener
+    window.addEventListener('keydown', this.escHandler);
   }
 
   close() {
     sound.playClick();
+    window.removeEventListener('keydown', this.escHandler);
     const modal = document.getElementById('passport-modal');
     if (modal) modal.remove();
     this.onClose();

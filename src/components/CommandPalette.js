@@ -18,6 +18,7 @@ export class CommandPalette {
     const q = this.query.toLowerCase().trim();
 
     const staticActions = [
+      { id: 'act-unstop', title: 'Unstop Competition Plugin: Ingest Challenges & Multi-Round Milestones', category: 'Action', icon: 'fa-bolt', action: () => this.onAction('unstop-plugin') },
       { id: 'act-smart', title: 'AI Smart Ingest: Paste Confirmation Email', category: 'Action', icon: 'fa-wand-magic-sparkles', action: () => this.onAction('smart-ingest') },
       { id: 'act-add', title: 'Add New Event Journey', category: 'Action', icon: 'fa-plus', action: () => this.onAction('new-event') },
       { id: 'act-survival', title: 'Day-of-Event Survival Mode (Live HUD & Pass)', category: 'Focus', icon: 'fa-bolt', action: () => this.onAction('survival-mode') },

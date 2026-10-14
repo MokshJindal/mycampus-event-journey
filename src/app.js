@@ -19,6 +19,8 @@ import { PassportModal } from './components/PassportModal.js';
 import { DiscoverModal } from './components/DiscoverModal.js';
 import { EventModal } from './components/EventModal.js';
 import { CommandPalette } from './components/CommandPalette.js';
+import { UnstopPluginModal } from './components/UnstopPluginModal.js';
+import { Footer } from './components/Footer.js';
 
 class MyCampusApp {
   constructor() {
@@ -94,6 +96,13 @@ class MyCampusApp {
 
     // 3. Render Active View
     this.renderCurrentView();
+
+    // 4. Render Bottom Dashboard Footer
+    this.footer = new Footer({
+      onOpenModal: (modalId) => this.openModal(modalId),
+      onViewChange: (view) => this.switchView(view)
+    });
+    this.footer.render();
   }
 
   refreshAll() {
@@ -304,11 +313,23 @@ class MyCampusApp {
         }).render();
         break;
 
+      case 'unstop-plugin':
+        new UnstopPluginModal({
+          onImportEvent: (newEvent) => {
+            this.events = StorageManager.addEvent(newEvent);
+            this.showToast(`Imported Unstop Challenge: "${newEvent.title}" (${newEvent.milestones.length} rounds synced)`);
+            this.refreshAll();
+          },
+          onClose: () => {}
+        }).render();
+        break;
+
       case 'command-palette':
         new CommandPalette({
           events: this.events,
           onAction: (act, param) => {
-            if (act === 'smart-ingest') this.openModal('smart-ingest');
+            if (act === 'unstop-plugin') this.openModal('unstop-plugin');
+            else if (act === 'smart-ingest') this.openModal('smart-ingest');
             else if (act === 'new-event') this.openModal('new-event');
             else if (act === 'survival-mode') this.openModal('survival-mode');
             else if (act === 'campus-map') this.openModal('campus-map');
@@ -402,12 +423,16 @@ class MyCampusApp {
         this.openModal('command-palette');
       }
 
-      // Quick 1-4 view keys if not in input/textarea
+      // Quick 1-4 view keys and 'u' for Unstop if not in input/textarea
       if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
         if (e.key === '1') this.switchView('timeline');
         if (e.key === '2') this.switchView('calendar');
         if (e.key === '3') this.switchView('kanban');
         if (e.key === '4') this.switchView('clash-radar');
+        if (e.key.toLowerCase() === 'u') {
+          sound.playClick();
+          this.openModal('unstop-plugin');
+        }
       }
     });
   }
