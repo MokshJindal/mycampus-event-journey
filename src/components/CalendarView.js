@@ -5,17 +5,14 @@
 // and Interactive Full-Width Date Matrix
 // ==========================================================================
 
-import { sound } from '../utils/audio.js';
-
 export class CalendarView {
-  constructor({ events, onSelectEvent, onOpenSurvivalMode }) {
+  constructor({ events, onSelectEvent }) {
     this.events = events;
     this.onSelectEvent = onSelectEvent;
-    this.onOpenSurvivalMode = onOpenSurvivalMode;
     this.currentYear = 2026;
     this.currentMonth = 9; // October (0-indexed: 9 = October)
     this.calendarMode = 'schedule-axis'; // 'schedule-axis' | 'month-grid'
-    this.selectedDate = '2026-10-18'; // Default to high-density clash date
+    this.selectedDate = '2026-10-18';
   }
 
   update({ events }) {
@@ -449,13 +446,6 @@ export class CalendarView {
             </div>
           </div>
 
-          <button 
-            id="btn-day-survival-trigger" 
-            class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-200 text-white dark:text-slate-900 rounded-xl text-xs font-bold flex items-center space-x-1.5 shadow-xs transition-colors self-start sm:self-auto"
-          >
-            <i class="fas fa-bolt text-xs"></i>
-            <span>Open Day-of HUD</span>
-          </button>
         </div>
 
         <!-- Milestones list -->
@@ -515,7 +505,6 @@ export class CalendarView {
     const axisBtn = document.getElementById('cal-mode-axis-btn');
     if (axisBtn) {
       axisBtn.onclick = () => {
-        sound.playClick();
         this.calendarMode = 'schedule-axis';
         this.render();
       };
@@ -524,7 +513,6 @@ export class CalendarView {
     const gridBtn = document.getElementById('cal-mode-grid-btn');
     if (gridBtn) {
       gridBtn.onclick = () => {
-        sound.playClick();
         this.calendarMode = 'month-grid';
         this.render();
       };
@@ -534,7 +522,6 @@ export class CalendarView {
     const prevBtn = document.getElementById('cal-prev-month');
     if (prevBtn) {
       prevBtn.onclick = () => {
-        sound.playClick();
         if (this.currentMonth === 0) {
           this.currentMonth = 11;
           this.currentYear--;
@@ -548,7 +535,6 @@ export class CalendarView {
     const nextBtn = document.getElementById('cal-next-month');
     if (nextBtn) {
       nextBtn.onclick = () => {
-        sound.playClick();
         if (this.currentMonth === 11) {
           this.currentMonth = 0;
           this.currentYear++;
@@ -562,7 +548,6 @@ export class CalendarView {
     const todayBtn = document.getElementById('cal-today-btn');
     if (todayBtn) {
       todayBtn.onclick = () => {
-        sound.playClick();
         const now = new Date();
         this.currentYear = now.getFullYear();
         this.currentMonth = now.getMonth();
@@ -574,7 +559,6 @@ export class CalendarView {
 
     // Click on date cells (axis headers, axis cells, or month grid cells)
     const selectDateHandler = (dateStr) => {
-      sound.playClick();
       this.selectedDate = dateStr;
       this.render();
       // Scroll to bottom drawer if not visible
@@ -590,15 +574,5 @@ export class CalendarView {
         if (d) selectDateHandler(d);
       };
     });
-
-    const btnSurvival = document.getElementById('btn-day-survival-trigger');
-    if (btnSurvival) {
-      btnSurvival.onclick = () => {
-        sound.playClick();
-        const items = dateMap[this.selectedDate] || [];
-        const evtId = items[0] ? items[0].event.id : null;
-        this.onOpenSurvivalMode(evtId);
-      };
-    }
   }
 }

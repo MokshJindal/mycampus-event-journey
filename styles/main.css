@@ -1,6 +1,7 @@
 /* ==========================================================================
-   MyCampus: Your Event Journey - Modern Human-Crafted Collegiate Design System
-   Aesthetic: Space Grotesk + Plus Jakarta Sans, Clean Linear/Vercel Precision
+   MyCampus: Student Event Journey
+   Modern, Ultra-Clean Design System inspired by Linear & Notion Calendar
+   Pure Typography, Crisp 1px Borders, and Fast Micro-Interactions
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap');
@@ -10,84 +11,58 @@
   --font-display: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Theme tokens - Light Mode (Crisp Human SaaS / Studio) */
+  /* Theme tokens - Light Mode (Crisp Studio Light) */
   --bg-primary: #f8fafc;
   --bg-secondary: #ffffff;
   --bg-surface: #f1f5f9;
-  --card-bg: rgba(255, 255, 255, 0.94);
+  --card-bg: rgba(255, 255, 255, 0.95);
   --card-border: #e2e8f0;
   --card-hover-border: #cbd5e1;
-  --text-main: #090b10;
+  --text-main: #0f172a;
   --text-muted: #475569;
   --text-subtle: #94a3b8;
-  --accent-blue: #2563eb;
-  --accent-indigo: #4f46e5;
-  --accent-amber: #d97706;
-  --accent-emerald: #059669;
-  --accent-rose: #e11d48;
-  --accent-purple: #7c3aed;
-  --accent-unstop: #ea580c;
   --header-bg: rgba(255, 255, 255, 0.92);
-  --ambient-glow: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.04) 0%, transparent 60%);
   --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-  --shadow-card-hover: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 10px -6px rgba(15, 23, 42, 0.04);
+  --shadow-card-hover: 0 8px 20px -4px rgba(15, 23, 42, 0.08);
 }
 
 .dark {
-  /* Theme tokens - Dark Mode (Obsidian Zinc, Linear / Vercel Developer Dark) */
+  /* Theme tokens - Dark Mode (Obsidian Zinc Dark) */
   --bg-primary: #090b10;
   --bg-secondary: #111522;
   --bg-surface: #171d2d;
-  --card-bg: rgba(17, 21, 34, 0.82);
+  --card-bg: rgba(17, 21, 34, 0.85);
   --card-border: rgba(255, 255, 255, 0.08);
-  --card-hover-border: rgba(59, 130, 246, 0.4);
+  --card-hover-border: rgba(255, 255, 255, 0.18);
   --text-main: #f8fafc;
   --text-muted: #94a3b8;
   --text-subtle: #64748b;
-  --accent-blue: #3b82f6;
-  --accent-indigo: #6366f1;
-  --accent-amber: #f59e0b;
-  --accent-emerald: #10b981;
-  --accent-rose: #f43f5e;
-  --accent-purple: #a855f7;
-  --accent-unstop: #fb923c;
-  --header-bg: rgba(9, 11, 16, 0.88);
-  --ambient-glow: radial-gradient(circle at 50% -10%, rgba(37, 99, 235, 0.10) 0%, transparent 65%);
-  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.4), inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
-  --shadow-card-hover: 0 14px 30px -4px rgba(0, 0, 0, 0.6), 0 0 16px rgba(37, 99, 235, 0.15), inset 0 1px 0 0 rgba(255, 255, 255, 0.12);
+  --header-bg: rgba(9, 11, 16, 0.90);
+  --shadow-card: 0 4px 16px -2px rgba(0, 0, 0, 0.4);
+  --shadow-card-hover: 0 10px 25px -4px rgba(0, 0, 0, 0.6);
 }
 
-/* Background Ambient Canvas */
+/* Base Body Styles */
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-primary);
-  background-image: var(--ambient-glow);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
   color: var(--text-main);
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.2s ease, color 0.2s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Human-designed Typography */
+/* Headings */
 h1, h2, h3, h4, .font-display {
   font-family: var(--font-display);
   letter-spacing: -0.025em;
-}
-
-/* Modern Clean Title Typography */
-.brand-title {
-  font-family: var(--font-display);
-  letter-spacing: -0.03em;
-  font-weight: 700;
 }
 
 /* Unstop Brand Badge */
 .unstop-pill {
   background: rgba(249, 115, 22, 0.12);
   color: #ea580c;
-  border: 1px solid rgba(249, 115, 22, 0.3);
+  border: 1px solid rgba(249, 115, 22, 0.25);
 }
 
 .dark .unstop-pill {
@@ -110,9 +85,9 @@ h1, h2, h3, h4, .font-display {
   -webkit-backdrop-filter: blur(14px);
   border: 1px solid var(--card-border);
   box-shadow: var(--shadow-card);
-  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
-              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
-              border-color 0.2s ease;
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.18s ease;
 }
 
 .glass-card:hover {
@@ -121,73 +96,7 @@ h1, h2, h3, h4, .font-display {
   box-shadow: var(--shadow-card-hover);
 }
 
-/* Interactive Pill Navigation Tabs */
-.view-tab-pill {
-  position: relative;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.view-tab-pill.active {
-  background: #ffffff;
-  color: #1d4ed8;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.dark .view-tab-pill.active {
-  background: #1e293b;
-  color: #38bdf8;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-/* Dropdown Menu Animation */
-.dropdown-menu-enter {
-  animation: dropdownIn 0.14s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes dropdownIn {
-  from {
-    opacity: 0;
-    transform: translateY(-6px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Connected Horizontal Stepper for Events */
-.stepper-connector {
-  position: relative;
-}
-
-.stepper-connector::after {
-  content: '';
-  position: absolute;
-  top: 14px;
-  left: 32px;
-  right: -8px;
-  height: 2px;
-  background: var(--card-border);
-  z-index: 1;
-}
-
-.stepper-connector.completed::after {
-  background: #10b981;
-}
-
-/* Digital Monospace Countdown Chip */
-.countdown-clock-chip {
-  font-family: var(--font-mono);
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-.dark .countdown-clock-chip {
-  background: rgba(17, 21, 34, 0.95);
-  border: 1px solid rgba(245, 158, 11, 0.4);
-}
-
-/* Smooth custom scrollbars */
+/* Custom Scrollbars */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
@@ -203,42 +112,9 @@ h1, h2, h3, h4, .font-display {
   background: rgba(148, 163, 184, 0.55);
 }
 
-/* Pulse Animations */
-@keyframes beacon-glow {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.45);
-  }
-  50% {
-    transform: scale(1.04);
-    box-shadow: 0 0 0 7px rgba(239, 68, 68, 0);
-  }
-}
-
-.beacon-pulse {
-  animation: beacon-glow 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
-}
-
-/* Modals backdrop */
+/* Modal Overlay */
 .modal-overlay {
-  background: rgba(3, 6, 12, 0.8);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-
-/* Print Styling for Resume Brag Sheet */
-@media print {
-  body {
-    background: #ffffff !important;
-    color: #000000 !important;
-  }
-  .no-print, header, nav, #navbar-root, #hero-stats-root, .modal-overlay, #toast-container, footer, #footer-root {
-    display: none !important;
-  }
-  #print-section {
-    display: block !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
+  background: rgba(3, 6, 12, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }

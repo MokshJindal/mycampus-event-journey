@@ -3,7 +3,6 @@
 // Full Event Add / Edit Dialog with Dynamic Multi-Milestone Builder
 // ==========================================================================
 
-import { sound } from '../utils/audio.js';
 import { CAMPUS_BUILDINGS } from '../data/initialData.js';
 
 export class EventModal {
@@ -361,7 +360,6 @@ export class EventModal {
     const addMsBtn = document.getElementById('btn-add-milestone');
     if (addMsBtn) {
       addMsBtn.onclick = () => {
-        sound.playClick();
         this.saveCurrentInputs();
         this.milestones.push({
           id: `m-${Date.now()}-${this.milestones.length + 1}`,
@@ -418,7 +416,6 @@ export class EventModal {
           milestones: this.milestones
         };
 
-        sound.playSuccess();
         this.onSave(updatedEvent);
         this.close();
       };
@@ -438,7 +435,6 @@ export class EventModal {
   attachMilestoneInputListeners() {
     document.querySelectorAll('[data-action="remove-ms"]').forEach(btn => {
       btn.onclick = () => {
-        sound.playClick();
         this.saveCurrentInputs();
         const idx = parseInt(btn.getAttribute('data-idx'), 10);
         this.milestones.splice(idx, 1);
@@ -452,7 +448,6 @@ export class EventModal {
   }
 
   close() {
-    sound.playClick();
     const modal = document.getElementById('event-modal');
     if (modal) modal.remove();
     this.onClose();

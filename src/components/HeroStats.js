@@ -1,22 +1,16 @@
 // ==========================================================================
-// Upgraded HeroStats Component
-// Modern Command Center Banner, Side-Positioned AI Circular Ingest Panel,
-// Clean Stat Cards, and Interactive Category Filters
+// Clean HeaderStats Component
+// Clear Overview, Real Next Deadline, and Category Filter Pills
+// 100% Bluff-free, fast, and intuitive
 // ==========================================================================
 
-import { sound } from '../utils/audio.js';
-import { StorageManager } from '../utils/storage.js';
-
 export class HeroStats {
-  constructor({ stats, currentCategory, onCategoryChange, onOpenModal, onJumpToEvent, events }) {
+  constructor({ stats, currentCategory, onCategoryChange, onOpenModal, events }) {
     this.stats = stats;
     this.currentCategory = currentCategory;
     this.onCategoryChange = onCategoryChange;
     this.onOpenModal = onOpenModal;
-    this.onJumpToEvent = onJumpToEvent;
     this.events = events;
-    this.profile = StorageManager.getProfile();
-    this.countdownTimer = null;
   }
 
   update({ stats, currentCategory, events }) {
@@ -26,264 +20,173 @@ export class HeroStats {
     this.render();
   }
 
-  startCountdown() {
-    if (this.countdownTimer) clearInterval(this.countdownTimer);
+  getNextMilestone() {
+    const now = new Date();
+    let nextMs = null;
+    let nextEvt = null;
+    let minDiff = Infinity;
 
-    const updateTicker = () => {
-      const el = document.getElementById('hero-countdown-ticker');
-      if (!el) return;
+    this.events.forEach(e => {
+      (e.milestones || []).forEach(m => {
+        if (!m.completed && m.deadline) {
+          const d = new Date(m.deadline);
+          const diff = d - now;
+          if (diff > 0 && diff < minDiff) {
+            minDiff = diff;
+            nextMs = m;
+            nextEvt = e;
+          }
+        }
+      });
+    });
 
-      if (!this.stats.imminentList || this.stats.imminentList.length === 0) {
-        el.innerHTML = `
-          <div class="flex items-center space-x-1.5 text-xs text-emerald-500 font-semibold">
-            <i class="fas fa-check-circle"></i>
-            <span>All submissions on schedule</span>
-          </div>
-        `;
-        return;
-      }
+    if (!nextMs) return null;
 
-      const next = this.stats.imminentList[0];
-      const now = new Date();
-      const diffMs = next.deadline - now;
-
-      if (diffMs <= 0) {
-        el.innerHTML = `
-          <div class="flex items-center space-x-1.5 text-xs text-rose-500 font-bold animate-pulse">
-            <i class="fas fa-triangle-exclamation"></i>
-            <span>Submission due right now!</span>
-          </div>
-        `;
-        return;
-      }
-
-      const totalSec = Math.floor(diffMs / 1000);
-      const hours = Math.floor(totalSec / 3600);
-      const minutes = Math.floor((totalSec % 3600) / 60);
-      const seconds = totalSec % 60;
-      const pad = (n) => String(n).padStart(2, '0');
-
-      el.innerHTML = `
-        <div class="flex items-center space-x-1.5 font-mono text-xs font-bold text-amber-500">
-          <span class="bg-amber-500/10 px-2 py-1 rounded-lg border border-amber-500/30">${pad(hours)}h</span>
-          <span class="text-amber-500/60">:</span>
-          <span class="bg-amber-500/10 px-2 py-1 rounded-lg border border-amber-500/30">${pad(minutes)}m</span>
-          <span class="text-amber-500/60">:</span>
-          <span class="bg-amber-500/10 px-2 py-1 rounded-lg border border-amber-500/30">${pad(seconds)}s</span>
-        </div>
-      `;
+    const diffDays = Math.ceil(minDiff / (1000 * 60 * 60 * 24));
+    return {
+      title: nextMs.title,
+      eventTitle: nextEvt.title,
+      daysLeft: diffDays,
+      deadlineStr: new Date(nextMs.deadline).toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric'
+      })
     };
+  }
 
-    updateTicker();
-    this.countdownTimer = setInterval(updateTicker, 1000);
+  getMilestoneProgress() {
+    let total = 0;
+    let completed = 0;
+    this.events.forEach(e => {
+      (e.milestones || []).forEach(m => {
+        total++;
+        if (m.completed) completed++;
+      });
+    });
+    const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+    return { total, completed, percent };
   }
 
   render() {
     const container = document.getElementById('hero-stats-root');
     if (!container) return;
 
-    const nextImminent = this.stats.imminentList && this.stats.imminentList[0];
+    const nextDeadline = this.getNextMilestone();
+    const progress = this.getMilestoneProgress();
+
     const categories = [
-      { id: 'All', label: 'All Journeys', icon: 'fa-globe' },
+      { id: 'All', label: 'All Events', icon: 'fa-globe' },
       { id: 'Hackathon', label: 'Hackathons', icon: 'fa-laptop-code' },
-      { id: 'Workshop', label: 'Workshops', icon: 'fa-chalkboard-user' },
-      { id: 'Conference', label: 'Conferences', icon: 'fa-book-open' },
       { id: 'Competition', label: 'Competitions', icon: 'fa-trophy' },
-      { id: 'Cultural', label: 'Cultural', icon: 'fa-music' }
+      { id: 'Workshop', label: 'Workshops', icon: 'fa-chalkboard-user' },
+      { id: 'Conference', label: 'Conferences', icon: 'fa-book-open' }
     ];
 
     container.innerHTML = `
-      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-2">
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-2 space-y-4">
         
-        <!-- Modern Command Banner with Side AI Ingest Panel -->
-        <div class="relative overflow-hidden rounded-2xl p-6 sm:p-7 bg-slate-900 border border-slate-800 shadow-md text-white">
+        <!-- Top Metrics Row -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
           
-          <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-            
-            <!-- Left Side: Student Identity & Headline (7 Cols) -->
-            <div class="lg:col-span-7 space-y-3">
-              <div class="flex flex-wrap items-center gap-2">
-                <div class="flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs text-blue-400 font-medium">
-                  <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
-                  <span>Autumn 2026 Season</span>
+          <!-- Card 1: Total Registered -->
+          <div class="glass-card rounded-2xl p-4 border border-slate-200 dark:border-white/10 flex items-center justify-between">
+            <div class="space-y-0.5">
+              <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Active Events
+              </span>
+              <div class="text-2xl font-display font-bold text-slate-900 dark:text-white">
+                ${this.events.length} <span class="text-xs font-sans text-slate-400 font-normal">Registered</span>
+              </div>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-sm">
+              <i class="fas fa-calendar-check"></i>
+            </div>
+          </div>
+
+          <!-- Card 2: Next Imminent Deadline -->
+          <div class="glass-card rounded-2xl p-4 border border-slate-200 dark:border-white/10 flex items-center justify-between">
+            <div class="space-y-0.5 max-w-[70%]">
+              <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                Next Deadline
+              </span>
+              ${nextDeadline ? `
+                <div class="text-xs font-bold text-slate-900 dark:text-white truncate">
+                  ${nextDeadline.title}
                 </div>
-                <span class="text-xs text-slate-500">•</span>
-                <span class="text-xs font-mono text-slate-300 font-semibold">
-                  ${this.profile.name} <span class="text-slate-500">(${this.profile.rollNo})</span>
+                <div class="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
+                  ${nextDeadline.deadlineStr} • In ${nextDeadline.daysLeft} days
+                </div>
+              ` : `
+                <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  All rounds on schedule
+                </div>
+              `}
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-sm">
+              <i class="fas fa-clock"></i>
+            </div>
+          </div>
+
+          <!-- Card 3: Milestone Progress -->
+          <div class="glass-card rounded-2xl p-4 border border-slate-200 dark:border-white/10 flex items-center justify-between">
+            <div class="space-y-0.5 w-full mr-3">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                  Rounds Completed
+                </span>
+                <span class="text-xs font-bold text-blue-600 dark:text-blue-400">
+                  ${progress.percent}%
                 </span>
               </div>
-
-              <h1 class="text-2xl sm:text-3xl font-display font-bold tracking-tight text-white leading-tight">
-                One Clean Timeline for Every Event
-              </h1>
-
-              <p class="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
-                Bring scattered hackathon registrations, Unstop competition rounds, workshop checkpoints, and campus venues into a single synchronized schedule.
-              </p>
-            </div>
-
-            <!-- Right Side: Dedicated AI Smart Ingest Card (5 Cols) -->
-            <div class="lg:col-span-5 bg-slate-800/80 rounded-xl p-4 border border-slate-700/80 shadow-inner flex flex-col justify-between space-y-3">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-2">
-                  <span class="w-7 h-7 rounded-lg bg-blue-600/20 text-blue-400 flex items-center justify-center text-xs">
-                    <i class="fas fa-wand-magic-sparkles"></i>
-                  </span>
-                  <span class="font-display font-bold text-xs sm:text-sm text-white">Smart Ingest Engine</span>
-                </div>
-                <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Side Assistant</span>
+              <div class="text-xs font-medium text-slate-700 dark:text-slate-300">
+                ${progress.completed} of ${progress.total} milestones checked
               </div>
-
-              <p class="text-[11px] text-slate-300 leading-snug">
-                Paste any unstructured email, WhatsApp club circular, or Unstop notice to auto-build milestones and venue tags.
-              </p>
-
-              <div class="flex items-center space-x-2 pt-1">
-                <button 
-                  id="hero-side-ingest-btn" 
-                  class="flex-1 py-2 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold flex items-center justify-center space-x-1.5 shadow-sm transition-all"
-                >
-                  <i class="fas fa-paste text-xs"></i>
-                  <span>Paste & Auto-Import</span>
-                </button>
-
-                <button 
-                  id="hero-side-unstop-btn"
-                  title="Open Unstop Plugin" 
-                  class="py-2 px-3 bg-orange-500/10 hover:bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded-lg text-xs font-bold flex items-center space-x-1 transition-all"
-                >
-                  <i class="fas fa-bolt text-xs"></i>
-                  <span>Unstop</span>
-                </button>
-              </div>
-
-              <!-- Quick Presets -->
-              <div class="flex items-center space-x-1.5 pt-1 text-[10px] text-slate-400 overflow-x-auto">
-                <span class="text-slate-500 shrink-0">Presets:</span>
-                <button data-preset="devpost" class="hero-preset-btn px-2 py-0.5 rounded bg-slate-700/60 hover:bg-slate-700 text-slate-300">Devpost</button>
-                <button data-preset="unstop" class="hero-preset-btn px-2 py-0.5 rounded bg-slate-700/60 hover:bg-slate-700 text-slate-300">Unstop</button>
-                <button data-preset="luma" class="hero-preset-btn px-2 py-0.5 rounded bg-slate-700/60 hover:bg-slate-700 text-slate-300">Luma</button>
-                <button data-preset="whatsapp" class="hero-preset-btn px-2 py-0.5 rounded bg-slate-700/60 hover:bg-slate-700 text-slate-300">WhatsApp</button>
+              <div class="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mt-1.5">
+                <div class="h-full bg-blue-600 rounded-full transition-all duration-300" style="width: ${progress.percent}%"></div>
               </div>
             </div>
-
-          </div>
-
-        </div>
-
-        <!-- 4 Clean Stat Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mt-4">
-          
-          <!-- Card 1: Active Journeys -->
-          <div class="glass-card p-4 rounded-xl relative overflow-hidden group">
-            <div class="flex items-center justify-between">
-              <span class="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                Active Journeys
-              </span>
-              <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-500 flex items-center justify-center text-xs">
-                <i class="fas fa-route"></i>
-              </div>
-            </div>
-            <div class="mt-2.5 flex items-baseline space-x-2">
-              <span class="text-2xl font-display font-bold text-slate-900 dark:text-white">
-                ${this.stats.activeEvents}
-              </span>
-              <span class="text-xs text-slate-400">
-                of ${this.stats.totalEvents} registered
-              </span>
-            </div>
-            <div class="mt-2.5 pt-2 border-t border-slate-100 dark:border-white/5 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-              <span>${this.stats.completedEvents} completed</span>
-              <span class="font-bold text-amber-500">${this.stats.wonEvents} podiums</span>
-            </div>
-          </div>
-
-          <!-- Card 2: Urgency Radar Countdown -->
-          <div class="glass-card p-4 rounded-xl relative overflow-hidden ${nextImminent ? 'border-amber-500/40' : ''}">
-            <div class="flex items-center justify-between">
-              <span class="text-[11px] font-bold text-amber-500 uppercase tracking-wider flex items-center space-x-1.5">
-                <i class="fas fa-bolt"></i>
-                <span>Urgent Target (&lt;48h)</span>
-              </span>
-              <div class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-500 flex items-center justify-center text-xs">
-                <i class="fas fa-stopwatch"></i>
-              </div>
-            </div>
-            <div class="mt-2" id="hero-countdown-ticker">
-              <!-- Live countdown injected here -->
-            </div>
-            <div class="mt-1.5 text-xs truncate font-semibold text-slate-800 dark:text-slate-200" title="${nextImminent ? nextImminent.milestoneTitle : ''}">
-              ${nextImminent ? `<span class="text-blue-500">${nextImminent.eventTitle}:</span> ${nextImminent.milestoneTitle}` : 'All checkpoints completed'}
-            </div>
-          </div>
-
-          <!-- Card 3: Clash Radar -->
-          <div class="glass-card p-4 rounded-xl relative overflow-hidden cursor-pointer ${this.stats.clashesCount > 0 ? 'border-rose-500/40 hover:border-rose-500' : ''}" id="card-clash-trigger">
-            <div class="flex items-center justify-between">
-              <span class="text-[11px] font-bold ${this.stats.clashesCount > 0 ? 'text-rose-500' : 'text-slate-500 dark:text-slate-400'} uppercase tracking-wider">
-                Schedule Clashes
-              </span>
-              <div class="w-8 h-8 rounded-lg ${this.stats.clashesCount > 0 ? 'bg-rose-500/10 text-rose-500 beacon-pulse' : 'bg-emerald-500/10 text-emerald-500'} flex items-center justify-center text-xs">
-                <i class="fas fa-satellite-dish"></i>
-              </div>
-            </div>
-            <div class="mt-2.5 flex items-baseline space-x-2">
-              <span class="text-2xl font-display font-bold ${this.stats.clashesCount > 0 ? 'text-rose-500' : 'text-slate-900 dark:text-white'}">
-                ${this.stats.clashesCount}
-              </span>
-              <span class="text-xs text-slate-400">
-                ${this.stats.clashesCount === 1 ? 'overlap detected' : 'overlaps detected'}
-              </span>
-            </div>
-            <div class="mt-2.5 pt-2 border-t border-slate-100 dark:border-white/5 flex items-center text-xs font-semibold ${
-              this.stats.clashesCount > 0 ? 'text-rose-500' : 'text-emerald-500'
-            }">
-              ${this.stats.clashesCount > 0 ? '<i class="fas fa-triangle-exclamation mr-1.5"></i> Resolve in Clash Radar →' : '<i class="fas fa-shield-halved mr-1.5"></i> Optimal transit buffers'}
-            </div>
-          </div>
-
-          <!-- Card 4: Student XP & Level -->
-          <div class="glass-card p-4 rounded-xl relative overflow-hidden cursor-pointer" id="card-passport-trigger">
-            <div class="flex items-center justify-between">
-              <span class="text-[11px] font-bold text-indigo-500 dark:text-indigo-400 uppercase tracking-wider">
-                Event XP & Honors
-              </span>
-              <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center text-xs">
-                <i class="fas fa-medal"></i>
-              </div>
-            </div>
-            <div class="mt-2.5 flex items-baseline space-x-2">
-              <span class="text-2xl font-display font-bold text-indigo-600 dark:text-indigo-400">
-                ${this.stats.earnedXP} XP
-              </span>
-              <span class="text-xs text-slate-400">
-                / ${this.stats.totalXP} max
-              </span>
-            </div>
-            <div class="mt-2.5 w-full bg-slate-200 dark:bg-slate-700/60 h-1.5 rounded-full overflow-hidden">
-              <div class="bg-indigo-600 dark:bg-indigo-500 h-1.5 rounded-full" style="width: ${Math.min(100, Math.round((this.stats.earnedXP / Math.max(1, this.stats.totalXP)) * 100))}%"></div>
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-sm shrink-0">
+              <i class="fas fa-list-check"></i>
             </div>
           </div>
 
         </div>
 
-        <!-- Filter Chips Nav -->
-        <div class="mt-4 flex flex-wrap items-center justify-between gap-3 pt-1">
-          <div class="flex flex-wrap items-center gap-1.5">
+        <!-- Category Filter Pills Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+          <div class="flex flex-wrap items-center gap-1.5 bg-slate-100/80 dark:bg-slate-900/80 p-1 rounded-xl border border-slate-200 dark:border-slate-800">
             ${categories.map(cat => `
-              <button data-cat="${cat.id}" class="hero-cat-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center space-x-1.5 ${
-                this.currentCategory === cat.id
-                  ? 'bg-blue-600 text-white shadow-xs'
-                  : 'bg-white/90 dark:bg-slate-900/90 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white border border-slate-200 dark:border-slate-800'
-              }">
+              <button 
+                data-category="${cat.id}"
+                class="category-pill-btn px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all ${
+                  this.currentCategory === cat.id
+                    ? 'bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-xs'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }"
+              >
                 <i class="fas ${cat.icon} text-[10px]"></i>
                 <span>${cat.label}</span>
               </button>
             `).join('')}
           </div>
 
-          <div class="text-xs text-slate-500 dark:text-slate-400 flex items-center space-x-2">
-            <span>Tracking <strong class="text-slate-900 dark:text-white font-mono">${this.events.length}</strong> event journeys</span>
+          <!-- Quick Action Buttons -->
+          <div class="flex items-center space-x-2">
+            <button 
+              id="hero-btn-unstop" 
+              class="px-3 py-1.5 unstop-pill hover:opacity-90 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all"
+            >
+              <i class="fas fa-bolt text-[10px] text-orange-500"></i>
+              <span>Browse Unstop</span>
+            </button>
+
+            <button 
+              id="hero-btn-add" 
+              class="px-3 py-1.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:opacity-90 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all"
+            >
+              <i class="fas fa-plus text-[10px]"></i>
+              <span>Add Event</span>
+            </button>
           </div>
         </div>
 
@@ -291,56 +194,24 @@ export class HeroStats {
     `;
 
     this.attachEvents();
-    this.startCountdown();
   }
 
   attachEvents() {
-    document.querySelectorAll('.hero-cat-pill').forEach(btn => {
+    document.querySelectorAll('.category-pill-btn').forEach(btn => {
       btn.onclick = () => {
-        const cat = btn.getAttribute('data-cat');
-        sound.playClick();
+        const cat = btn.getAttribute('data-category');
         this.onCategoryChange(cat);
       };
     });
 
-    const btnSideIngest = document.getElementById('hero-side-ingest-btn');
-    if (btnSideIngest) {
-      btnSideIngest.onclick = () => {
-        sound.playClick();
-        this.onOpenModal('smart-ingest');
-      };
+    const unstopBtn = document.getElementById('hero-btn-unstop');
+    if (unstopBtn) {
+      unstopBtn.onclick = () => this.onOpenModal('unstop-hub');
     }
 
-    const btnSideUnstop = document.getElementById('hero-side-unstop-btn');
-    if (btnSideUnstop) {
-      btnSideUnstop.onclick = () => {
-        sound.playClick();
-        this.onOpenModal('unstop-plugin');
-      };
-    }
-
-    document.querySelectorAll('.hero-preset-btn').forEach(btn => {
-      btn.onclick = () => {
-        sound.playClick();
-        const preset = btn.getAttribute('data-preset');
-        this.onOpenModal('smart-ingest', preset);
-      };
-    });
-
-    const clashCard = document.getElementById('card-clash-trigger');
-    if (clashCard) {
-      clashCard.onclick = () => {
-        sound.playClick();
-        this.onOpenModal('switch-view-clash-radar');
-      };
-    }
-
-    const passCard = document.getElementById('card-passport-trigger');
-    if (passCard) {
-      passCard.onclick = () => {
-        sound.playClick();
-        this.onOpenModal('passport');
-      };
+    const addBtn = document.getElementById('hero-btn-add');
+    if (addBtn) {
+      addBtn.onclick = () => this.onOpenModal('new-event');
     }
   }
 }
