@@ -16,6 +16,7 @@ export class CommandPalette {
     const q = this.query.toLowerCase().trim();
 
     const staticActions = [
+      { id: 'act-profile', title: 'My Profile & Campus Ranking (#4 IIIT Delhi)', category: 'Student Profile', icon: 'fa-id-card-clip', action: () => this.onAction('profile') },
       { id: 'act-view-timeline', title: 'Timeline: View Event Journey', category: 'Navigation', icon: 'fa-stream', action: () => this.onAction('view-timeline') },
       { id: 'act-view-calendar', title: 'Calendar: View Axes & Schedule', category: 'Navigation', icon: 'fa-calendar-alt', action: () => this.onAction('view-calendar') },
       { id: 'act-view-unstop', title: 'Unstop Hub: Explore Competitions & Rounds', category: 'Navigation', icon: 'fa-bolt', action: () => this.onAction('view-unstop') },

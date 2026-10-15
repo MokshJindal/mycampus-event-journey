@@ -1,7 +1,7 @@
 // ==========================================================================
 // Main Application State Orchestrator
 // Pure, Clean, Intuitive: Timeline, Calendar, and Unstop Hub
-// Zero bloat, zero bluffs, instant response
+// Includes Student Profile & Campus Ranking Hub (#4 IIIT Delhi)
 // ==========================================================================
 
 import { StorageManager } from './utils/storage.js';
@@ -12,12 +12,14 @@ import { TimelineView } from './components/TimelineView.js';
 import { CalendarView } from './components/CalendarView.js';
 import { UnstopHubView } from './components/UnstopHubView.js';
 import { EventModal } from './components/EventModal.js';
+import { ProfileModal } from './components/ProfileModal.js';
 import { CommandPalette } from './components/CommandPalette.js';
 import { Footer } from './components/Footer.js';
 
 class MyCampusApp {
   constructor() {
     this.events = StorageManager.getEvents();
+    this.profile = StorageManager.getProfile();
     this.currentView = 'timeline'; // 'timeline' | 'calendar' | 'unstop'
     this.currentCategory = 'All';
     this.darkMode = localStorage.getItem('mycampus_theme') !== 'light';
@@ -39,7 +41,7 @@ class MyCampusApp {
     this.darkMode = !this.darkMode;
     localStorage.setItem('mycampus_theme', this.darkMode ? 'dark' : 'light');
     this.initTheme();
-    this.navbar.update({ darkMode: this.darkMode });
+    this.navbar.update({ darkMode: this.darkMode, profile: this.profile });
     this.showToast(`Switched to ${this.darkMode ? 'Dark' : 'Light'} Mode`);
   }
 
@@ -49,10 +51,11 @@ class MyCampusApp {
   }
 
   initComponents() {
-    // 1. Clean Top Navbar
+    // 1. Clean Top Navbar with Profile Icon & Ranking Badge
     this.navbar = new Navbar({
       currentView: this.currentView,
       darkMode: this.darkMode,
+      profile: this.profile,
       onViewChange: (view) => this.switchView(view),
       onOpenModal: (modalId) => this.openModal(modalId),
       onToggleTheme: () => this.toggleTheme()
@@ -84,7 +87,8 @@ class MyCampusApp {
 
     this.navbar.update({
       currentView: this.currentView,
-      darkMode: this.darkMode
+      darkMode: this.darkMode,
+      profile: this.profile
     });
 
     this.heroStats.update({
@@ -185,6 +189,19 @@ class MyCampusApp {
   // Modals
   openModal(modalType) {
     switch (modalType) {
+      case 'profile':
+        new ProfileModal({
+          events: this.events,
+          profile: this.profile,
+          onProfileUpdated: (updatedProfile) => {
+            this.profile = updatedProfile;
+            this.showToast(`Saved profile for ${updatedProfile.name}`);
+            this.refreshAll();
+          },
+          onClose: () => {}
+        }).render();
+        break;
+
       case 'unstop-hub':
         this.switchView('unstop');
         break;
@@ -205,7 +222,8 @@ class MyCampusApp {
         new CommandPalette({
           events: this.events,
           onAction: (act, param) => {
-            if (act === 'view-timeline') this.switchView('timeline');
+            if (act === 'profile') this.openModal('profile');
+            else if (act === 'view-timeline') this.switchView('timeline');
             else if (act === 'view-calendar') this.switchView('calendar');
             else if (act === 'view-unstop') this.switchView('unstop');
             else if (act === 'new-event') this.openModal('new-event');
@@ -270,11 +288,15 @@ class MyCampusApp {
         this.openModal('command-palette');
       }
 
-      // Quick 1-3 view keys if not typing in form inputs
+      // Quick keys if not typing in form inputs
       if (!['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
         if (e.key === '1') this.switchView('timeline');
         if (e.key === '2') this.switchView('calendar');
         if (e.key === '3') this.switchView('unstop');
+        if (e.key.toLowerCase() === 'p') {
+          e.preventDefault();
+          this.openModal('profile');
+        }
         if (e.key.toLowerCase() === 'n') {
           e.preventDefault();
           this.openModal('new-event');

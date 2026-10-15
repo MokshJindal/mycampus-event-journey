@@ -173,6 +173,14 @@ export class HeroStats {
           <!-- Quick Action Buttons -->
           <div class="flex items-center space-x-2">
             <button 
+              id="hero-btn-ranking" 
+              class="px-3 py-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/25 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all"
+            >
+              <i class="fas fa-trophy text-[10px] text-amber-500"></i>
+              <span>Campus Rank #4</span>
+            </button>
+
+            <button 
               id="hero-btn-unstop" 
               class="px-3 py-1.5 unstop-pill hover:opacity-90 rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all"
             >
@@ -203,6 +211,11 @@ export class HeroStats {
         this.onCategoryChange(cat);
       };
     });
+
+    const rankingBtn = document.getElementById('hero-btn-ranking');
+    if (rankingBtn) {
+      rankingBtn.onclick = () => this.onOpenModal('profile');
+    }
 
     const unstopBtn = document.getElementById('hero-btn-unstop');
     if (unstopBtn) {

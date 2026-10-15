@@ -40,6 +40,10 @@ export class Footer {
               <button id="footer-link-unstop" class="text-orange-600 dark:text-orange-400 hover:underline transition-colors font-semibold">
                 Unstop Hub
               </button>
+              <button id="footer-link-profile" class="text-amber-600 dark:text-amber-400 hover:underline transition-colors font-semibold flex items-center space-x-1">
+                <i class="fas fa-trophy text-[10px]"></i>
+                <span>Profile & Rank (#4)</span>
+              </button>
             </div>
 
             <!-- Right: 1-Click Export -->
@@ -72,6 +76,9 @@ export class Footer {
 
     const linkUnstop = document.getElementById('footer-link-unstop');
     if (linkUnstop) linkUnstop.onclick = () => this.onViewChange('unstop');
+
+    const linkProfile = document.getElementById('footer-link-profile');
+    if (linkProfile) linkProfile.onclick = () => this.onOpenModal('profile');
 
     const exportBtn = document.getElementById('footer-export-ics');
     if (exportBtn) {

@@ -1,20 +1,23 @@
 // ==========================================================================
 // Modern, Ultra-Clean Navbar Component
-// Minimalist, Balanced, and Fast: Direct View Switching, Search, and New Event
+// Minimalist, Balanced, and Fast: Direct View Switching, Search, New Event,
+// and Student Profile & Campus Ranking Access
 // ==========================================================================
 
 export class Navbar {
-  constructor({ currentView, onViewChange, onOpenModal, darkMode, onToggleTheme }) {
+  constructor({ currentView, onViewChange, onOpenModal, darkMode, onToggleTheme, profile }) {
     this.currentView = currentView; // 'timeline' | 'calendar' | 'unstop'
     this.onViewChange = onViewChange;
     this.onOpenModal = onOpenModal;
     this.darkMode = darkMode;
     this.onToggleTheme = onToggleTheme;
+    this.profile = profile || { name: 'Moksh Jindal', avatar: 'MJ' };
   }
 
-  update({ currentView, darkMode }) {
+  update({ currentView, darkMode, profile }) {
     if (currentView !== undefined) this.currentView = currentView;
     if (darkMode !== undefined) this.darkMode = darkMode;
+    if (profile !== undefined) this.profile = profile;
     this.render();
   }
 
@@ -73,7 +76,7 @@ export class Navbar {
             </button>
           </nav>
 
-          <!-- RIGHT: Quick Search, Add Event & Theme Toggle -->
+          <!-- RIGHT: Search, Add Event, Theme Toggle & Profile with Ranking -->
           <div class="flex items-center space-x-2">
             
             <!-- Search Omnibar (⌘K) -->
@@ -92,6 +95,25 @@ export class Navbar {
             <!-- Theme Toggle Button -->
             <button id="btn-theme-toggle" title="Toggle Theme" class="p-2 rounded-xl text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
               <i class="fas ${this.darkMode ? 'fa-sun text-amber-400' : 'fa-moon text-slate-600'} text-xs"></i>
+            </button>
+
+            <!-- Student Profile & Campus Ranking Pill (Direct Access) -->
+            <button 
+              id="btn-profile-trigger" 
+              title="Student Profile & Campus Ranking (#4)"
+              class="flex items-center space-x-2 pl-1.5 pr-2.5 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800/80 dark:hover:bg-slate-700/80 rounded-xl border border-slate-200 dark:border-slate-700 transition-all cursor-pointer group"
+            >
+              <div class="w-6 h-6 rounded-lg bg-blue-600 text-white font-bold font-display text-[10px] flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+                ${this.profile?.avatar || 'MJ'}
+              </div>
+              <div class="hidden sm:flex flex-col text-left leading-none">
+                <span class="text-[11px] font-bold text-slate-900 dark:text-white truncate max-w-[70px]">
+                  ${this.profile?.name ? this.profile.name.split(' ')[0] : 'Profile'}
+                </span>
+                <span class="text-[9px] font-mono font-semibold text-amber-500 mt-0.5">
+                  Rank #4
+                </span>
+              </div>
             </button>
 
           </div>
@@ -134,6 +156,12 @@ export class Navbar {
     const themeBtn = document.getElementById('btn-theme-toggle');
     if (themeBtn) {
       themeBtn.onclick = () => this.onToggleTheme();
+    }
+
+    // Profile trigger button
+    const profileBtn = document.getElementById('btn-profile-trigger');
+    if (profileBtn) {
+      profileBtn.onclick = () => this.onOpenModal('profile');
     }
   }
 }
